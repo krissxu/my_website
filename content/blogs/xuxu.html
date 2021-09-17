@@ -1,40 +1,25 @@
 ---
-title: 'MAM 2022 Pre-programme Assignment'
-author: "XU XU"
-date: "26/08/21"
-output:
-  html_document:
-    theme: flatly
-    highlight: zenburn
-    toc: yes
-    toc_float: yes
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna
+  sed nunc rhoncus condimentum sem. In efficitur ligula tate urna. Maecenas massa
+  sed magna lacinia magna pellentesque lorem ipsum dolor. Nullam et orci eu lorem
+  consequat tincidunt. Vivamus et sagittis tempus.
+draft: false
+image: forex_prices.jpg
+keywords: ""
+slug: xuxu
+title: Pre-course session
+
 ---
 
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<p>The goal is to test your software installation, to demonstrate competency in Markdown, and in the basics of <code>ggplot</code>.</p>
-<div id="task-1" class="section level1">
-<h1>Task 1</h1>
-<blockquote>
-<h2 id="about-xu-xu">About XU XU</h2>
-<p>My name is Xu Xu and I am an international student. I come from <a href="https://en.wikipedia.org/wiki/Xi%27an">Xi’an</a>, one of the four major ancient civilization capitals. <strong>People in Xi’an always welcome tourists from all over the world</strong>.</p>
-<p>I enjoy travelling and photographing during my free time. I have been to more than 25 countries worldwide. The images below are the northern light I witnessed in Iceland and the beautiful sunset I saw in Santorini, Greece.</p>
-<p><img src="https://img0.baidu.com/it/u=1757529605,3587294564&amp;fm=26&amp;fmt=auto&amp;gp=0.jpg" /></p>
-<p><img src="https://gimg2.baidu.com/image_search/src=http%253A%252F%252Fs1.lvjs.com.cn%252Fuploads%252Fpc%252Fplace2%252F2017-06-13%252F604cac86-8323-4f29-a427-2de4643db9d5_480_320.jpg&amp;refer=http%253A%252F%252Fs1.lvjs.com.cn&amp;app=2002&amp;size=f9999,10000&amp;q=a80&amp;n=0&amp;g=0n&amp;fmt=jpeg?sec=1632506285&amp;t=3e0a4c439b32095fe27ba2b8577f4196" /></p>
-<h2 id="zero-to-one">Zero to One</h2>
-<p>Back in 2017, I came to the UK alone for studying the foundation courses and undergraduate degree. I didn’t really know anyone here before and my English wasn’t that fluent, which makes the beginning became particularly difficult. (<em>luckily, I soon met my girlfriend here!</em>) And by doing the following things:</p>
-<ul>
-<li>Always open to make friends with people around.</li>
-<li>Force myself out of my own comfort zone to talk to new people and try new things.</li>
-<li>There are no silly questions at univeristy. So never worry about embarrassment.</li>
-<li>Talk to Uber or taxi drivers. A good way to communicate with native speakers.</li>
-</ul>
-<p>In my own way. I successfully managed to adapt to the new environment. Now, I have local volunteer experience. I recently graduate from University of York with the first class and even about to join London business school! I truely enjoy everying I have experienced and gained so far and I am so looking forward to my brand new start!</p>
-</blockquote>
-</div>
-<div id="task-2-gapminder-country-comparison" class="section level1">
-<h1>Task 2: <code>gapminder</code> country comparison</h1>
+<div id="gapminder-country-comparison" class="section level1">
+<h1><code>gapminder</code> country comparison</h1>
 <p>You have seen the <code>gapminder</code> dataset that has data on life expectancy, population, and GDP per capita for 142 countries from 1952 to 2007. To get a glimpse of the dataframe, namely to see the variable names, variable types, etc., we use the <code>glimpse</code> function. We also want to have a look at the first 20 rows of data.</p>
 <pre class="r"><code>glimpse(gapminder)</code></pre>
 <pre><code>## Rows: 1,704
@@ -81,7 +66,7 @@ continent_data &lt;- gapminder %&gt;%
 plot1&lt;-ggplot(country_data,aes(year,lifeExp)) + geom_point() + geom_smooth(se = FALSE)
 plot1</code></pre>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/lifeExp_one_country-1.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/lifeExp_one_country-1.png" width="672" /></p>
 <p>Next we need to add a title. Create a new plot, or extend plot1, using the <code>labs()</code> function to add an informative title to the plot.</p>
 <pre class="r"><code>extend_plot1&lt;-plot1+
   labs(title=&quot;Life Expectancy over Time for China&quot;,
@@ -89,26 +74,26 @@ plot1</code></pre>
        Y=&quot;lifeExp&quot;)
 extend_plot1</code></pre>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/lifeExp_one_country_with_label-1.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/lifeExp_one_country_with_label-1.png" width="672" /></p>
 <p>Secondly, produce a plot for all countries in the <em>continent</em> you come from. (Hint: map the <code>country</code> variable to the colour aesthetic. You also want to map <code>country</code> to the <code>group</code> aesthetic, so all points for each country are grouped together).</p>
 <pre class="r"><code>plot2&lt;-ggplot(continent_data,aes(x=year,y=lifeExp, colour= country)) + geom_point() + geom_smooth(se = FALSE)
 plot2</code></pre>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/lifeExp_one_continent-1.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/lifeExp_one_continent-1.png" width="672" /></p>
 <p>Finally, using the original <code>gapminder</code> data, produce a life expectancy over time graph, grouped (or faceted) by continent. We will remove all legends, adding the <code>theme(legend.position="none")</code> in the end of our ggplot.</p>
 <pre class="r"><code>plot3&lt;-ggplot(data=gapminder,aes(x=year,y=lifeExp,colour=continent))+geom_point() + geom_smooth(se = FALSE)+facet_wrap(~continent)+theme(legend.position=&quot;none&quot;)
 plot3</code></pre>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/lifeExp_facet_by_continent-1.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/lifeExp_facet_by_continent-1.png" width="672" /></p>
 <p>Given these trends, what can you say about life expectancy since 1952? Again, don’t just say what’s happening in the graph. Tell some sort of story and speculate about the differences in the patterns.</p>
 <blockquote>
 <p>With the development of medical technology and the growing awareness of health over years, the life expectancy is expected to constantly extend until a certain level. It is argued that there is a positive correlation for one country or continent between its the economic development level (GDP per capita) and life expectancy of its people, which could potentially explain the different patterns about the trends. For example, people in the continent like Africa probably have lower life expectancy comparing with people in other continents.</p>
 </blockquote>
 </div>
-<div id="task-3-brexit-vote-analysis" class="section level1">
-<h1>Task 3: Brexit vote analysis</h1>
+<div id="brexit-vote-analysis" class="section level1">
+<h1>Brexit vote analysis</h1>
 <p>We will have a look at the results of the 2016 Brexit vote in the UK. First we read the data using <code>read_csv()</code> and have a quick glimpse at the data</p>
-<pre class="r"><code>brexit_results &lt;- read_csv(here::here(&quot;data&quot;,&quot;brexit_results.csv&quot;))
+<pre class="r"><code>brexit_results &lt;- read_csv(here::here(&quot;~/Desktop/RR/my_website&quot;,&quot;brexit_results.csv&quot;))
 
 
 glimpse(brexit_results)</code></pre>
@@ -132,18 +117,18 @@ glimpse(brexit_results)</code></pre>
 histogram&lt;-ggplot(brexit_results, aes(x = leave_share)) +
   geom_histogram(binwidth = 2.5)
 histogram</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/brexit_histogram-1.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/brexit_histogram-1.png" width="672" /></p>
 <pre class="r"><code># density plot-- think smoothed histogram
 density_plot&lt;-ggplot(brexit_results, aes(x = leave_share)) +
   geom_density()
 density_plot</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/brexit_histogram-2.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/brexit_histogram-2.png" width="672" /></p>
 <pre class="r"><code># The empirical cumulative distribution function (ECDF) 
 ECDF_plot&lt;-ggplot(brexit_results, aes(x = leave_share)) +
   stat_ecdf(geom = &quot;step&quot;, pad = FALSE) +
   scale_y_continuous(labels = scales::percent)
 ECDF_plot</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/brexit_histogram-3.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/brexit_histogram-3.png" width="672" /></p>
 <p>One common explanation for the Brexit outcome was fear of immigration and opposition to the EU’s more open border policy. We can check the relationship (or correlation) between the proportion of native born residents (<code>born_in_uk</code>) in a constituency and its <code>leave_share</code>. To do this, let us get the correlation between the two variables</p>
 <pre class="r"><code>brexit_results %&gt;% 
   select(leave_share, born_in_uk) %&gt;% 
@@ -165,36 +150,36 @@ ECDF_plot</code></pre>
   NULL
 brexit_immigration_plot</code></pre>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/brexit_immigration_plot-1.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/brexit_immigration_plot-1.png" width="672" /></p>
 <p>You have the code for the plots, I would like you to revisit all of them and use the <code>labs()</code> function to add an informative title, subtitle, and axes titles to all plots.</p>
 <pre class="r"><code>extend_histogram&lt;-histogram+labs(title=&quot;Histogram&quot;,
                                  x=&quot;vote for leaving the EU %&quot;,
                                  y=&quot;number of parliament constituency&quot;)
 extend_histogram</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/all_plots_with_labels-1.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/all_plots_with_labels-1.png" width="672" /></p>
 <pre class="r"><code>extend_density_plot&lt;-density_plot+labs(title=&quot;Density Plot&quot;,
                                       x=&quot;vote for leaving the EU %&quot;,
                                       y=&quot;density&quot;)
 extend_density_plot</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/all_plots_with_labels-2.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/all_plots_with_labels-2.png" width="672" /></p>
 <pre class="r"><code>extend_ECDP_plot&lt;-ECDF_plot+labs(title = &quot;Empirical Cumulative Distribution Plot&quot;,
                                 x=&quot;vote for leaving the EU %&quot;,
                                 y=&quot;percentage&quot;)
 extend_ECDP_plot</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/all_plots_with_labels-3.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/all_plots_with_labels-3.png" width="672" /></p>
 <pre class="r"><code>extend_brexit_immigration_plot&lt;-brexit_immigration_plot+labs(title=&quot;Correlation between Native Born Residents and Their Opinion on Brexit&quot;,
                                                              x=&quot;precent of native born residents&quot;,
                                                              y=&quot;precent of leaving the EU&quot;)
 extend_brexit_immigration_plot</code></pre>
 <pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/all_plots_with_labels-4.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/all_plots_with_labels-4.png" width="672" /></p>
 <p>What can you say about the relationship shown above? Again, don’t just say what’s happening in the graph. Tell some sort of story and speculate about the differences in the patterns.</p>
 <blockquote>
 <p>It is clear that most UK residents voted for leaving the EU. However, there are some difference in different parliament constituencies. According to the last plot, this is because of the various levels of precentatge of native born residents in regions. Therefore, I guess votes in the key cities such as London and Manchester, where contain more residents who had international background before or were born abroad, tend to against leaving the EU.</p>
 </blockquote>
 </div>
-<div id="task-4-animal-rescue-incidents-attended-by-the-london-fire-brigade" class="section level1">
-<h1>Task 4: Animal rescue incidents attended by the London Fire Brigade</h1>
+<div id="animal-rescue-incidents-attended-by-the-london-fire-brigade" class="section level1">
+<h1>Animal rescue incidents attended by the London Fire Brigade</h1>
 <p><a href="https://data.london.gov.uk/dataset/animal-rescue-incidents-attended-by-lfb">The London fire brigade</a> attends a range of non-fire incidents (which we call ‘special services’). These ‘special services’ include assistance to animals that may be trapped or in distress. The data is provided from January 2009 and is updated monthly. A range of information is supplied for each incident including some location information (postcode, borough, ward), as well as the data/time of the incidents. We do not routinely record data about animal deaths or injuries.</p>
 <p>Please note that any cost included is a notional cost calculated based on the length of time rounded up to the nearest hour spent by Pump, Aerial and FRU appliances at the incident and charged at the current Brigade hourly rate.</p>
 <pre class="r"><code>url &lt;- &quot;https://data.london.gov.uk/download/animal-rescue-incidents-attended-by-lfb/8a7d91c2-9aec-4bde-937a-3998f4717cd8/Animal%20Rescue%20incidents%20attended%20by%20LFB%20from%20Jan%202009.csv&quot;
@@ -403,14 +388,14 @@ base_plot &lt;- animal_rescue %&gt;%
   theme_bw()
 
 base_plot + geom_histogram()</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/plots_on_incident_cost_by_animal_group-1.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/plots_on_incident_cost_by_animal_group-1.png" width="672" /></p>
 <pre class="r"><code>base_plot + geom_density()</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/plots_on_incident_cost_by_animal_group-2.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/plots_on_incident_cost_by_animal_group-2.png" width="672" /></p>
 <pre class="r"><code>base_plot + geom_boxplot()</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/plots_on_incident_cost_by_animal_group-3.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/plots_on_incident_cost_by_animal_group-3.png" width="672" /></p>
 <pre class="r"><code>base_plot + stat_ecdf(geom = &quot;step&quot;, pad = FALSE) +
   scale_y_continuous(labels = scales::percent)</code></pre>
-<p><img src="/blogs/XU_XU_files/figure-html/plots_on_incident_cost_by_animal_group-4.png" width="672" /></p>
+<p><img src="/blogs/xuxu_files/figure-html/plots_on_incident_cost_by_animal_group-4.png" width="672" /></p>
 <p>Which of these four graphs do you think best communicates the variability of the <code>incident_notional_cost</code> values? Also, can you please tell some sort of story (which animals are more expensive to rescue than others, the spread of values) and speculate about the differences in the patterns.</p>
 <blockquote>
 <p>Cow, Snake, Horse and Ferret are the four graphs, in my opinion, best communicates the variability of the incident cost values. Horse and Cow are much more expensive to rescue than others, probably because they have huge size and complex body structure.</p>

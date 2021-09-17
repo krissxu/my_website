@@ -1,13 +1,18 @@
 ---
-title: 'MAM 2022 Pre-programme Assignment'
-author: "XU XU"
-date: "26/08/21"
-output:
-  html_document:
-    theme: flatly
-    highlight: zenburn
-    toc: yes
-    toc_float: yes
+categories:
+- ""
+- ""
+date: "2017-10-31T22:42:51-05:00"
+description: Nullam et orci eu lorem consequat tincidunt vivamus et sagittis magna
+  sed nunc rhoncus condimentum sem. In efficitur ligula tate urna. Maecenas massa
+  sed magna lacinia magna pellentesque lorem ipsum dolor. Nullam et orci eu lorem
+  consequat tincidunt. Vivamus et sagittis tempus.
+draft: false
+image: forex_prices.jpg
+keywords: ""
+slug: xuxu
+title: Pre-course session
+
 ---
 
 ```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
@@ -17,32 +22,8 @@ library(here)
 library(janitor)
 ```
 
-The goal is to test your software installation, to demonstrate competency in Markdown, and in the basics of `ggplot`.
 
-# Task 1
-
-> ## About XU XU
->
-> My name is Xu Xu and I am an international student. I come from [Xi'an](https://en.wikipedia.org/wiki/Xi%27an), one of the four major ancient civilization capitals. **People in Xi'an always welcome tourists from all over the world**.
->
-> I enjoy travelling and photographing during my free time. I have been to more than 25 countries worldwide. The images below are the northern light I witnessed in Iceland and the beautiful sunset I saw in Santorini, Greece.
->
-> ![](https://img0.baidu.com/it/u=1757529605,3587294564&fm=26&fmt=auto&gp=0.jpg)
->
-> ![](https://gimg2.baidu.com/image_search/src=http%253A%252F%252Fs1.lvjs.com.cn%252Fuploads%252Fpc%252Fplace2%252F2017-06-13%252F604cac86-8323-4f29-a427-2de4643db9d5_480_320.jpg&refer=http%253A%252F%252Fs1.lvjs.com.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1632506285&t=3e0a4c439b32095fe27ba2b8577f4196)
->
-> ## Zero to One
->
-> Back in 2017, I came to the UK alone for studying the foundation courses and undergraduate degree. I didn't really know anyone here before and my English wasn't that fluent, which makes the beginning became particularly difficult. (*luckily, I soon met my girlfriend here!*) And by doing the following things:
->
-> -   Always open to make friends with people around.
-> -   Force myself out of my own comfort zone to talk to new people and try new things.
-> -   There are no silly questions at univeristy. So never worry about embarrassment.
-> -   Talk to Uber or taxi drivers. A good way to communicate with native speakers.
->
-> In my own way. I successfully managed to adapt to the new environment. Now, I have local volunteer experience. I recently graduate from University of York with the first class and even about to join London business school! I truely enjoy everying I have experienced and gained so far and I am so looking forward to my brand new start!
-
-# Task 2: `gapminder` country comparison
+# `gapminder` country comparison
 
 You have seen the `gapminder` dataset that has data on life expectancy, population, and GDP per capita for 142 countries from 1952 to 2007. To get a glimpse of the dataframe, namely to see the variable names, variable types, etc., we use the `glimpse` function. We also want to have a look at the first 20 rows of data.
 
@@ -104,12 +85,12 @@ Given these trends, what can you say about life expectancy since 1952? Again, do
 
 > With the development of medical technology and the growing awareness of health over years, the life expectancy is expected to constantly extend until a certain level. It is argued that there is a positive correlation for one country or continent between its the economic development level (GDP per capita) and life expectancy of its people, which could potentially explain the different patterns about the trends. For example, people in the continent like Africa probably have lower life expectancy comparing with people in other continents.
 
-# Task 3: Brexit vote analysis
+#  Brexit vote analysis
 
 We will have a look at the results of the 2016 Brexit vote in the UK. First we read the data using `read_csv()` and have a quick glimpse at the data
 
 ```{r load_brexit_data, warning=FALSE, message=FALSE}
-brexit_results <- read_csv(here::here("data","brexit_results.csv"))
+brexit_results <- read_csv(here::here("~/Desktop/RR/my_website","brexit_results.csv"))
 
 
 glimpse(brexit_results)
@@ -194,7 +175,7 @@ What can you say about the relationship shown above? Again, don't just say what'
 
 > It is clear that most UK residents voted for leaving the EU. However, there are some difference in different parliament constituencies. According to the last plot, this is because of the various levels of precentatge of native born residents in regions. Therefore, I guess votes in the key cities such as London and Manchester, where contain more residents who had international background before or were born abroad, tend to against leaving the EU.
 
-# Task 4: Animal rescue incidents attended by the London Fire Brigade
+# Animal rescue incidents attended by the London Fire Brigade
 
 [The London fire brigade](https://data.london.gov.uk/dataset/animal-rescue-incidents-attended-by-lfb) attends a range of non-fire incidents (which we call 'special services'). These 'special services' include assistance to animals that may be trapped or in distress. The data is provided from January 2009 and is updated monthly. A range of information is supplied for each incident including some location information (postcode, borough, ward), as well as the data/time of the incidents. We do not routinely record data about animal deaths or injuries.
 

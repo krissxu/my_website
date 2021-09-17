@@ -1,0 +1,1276 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T22:26:09-05:00"
+description: Lorem Etiam Nullam
+draft: false
+image: pic09.jpg
+keywords: ""
+slug: hwthree
+title: group project
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+<link href="/rmarkdown-libs/lightable/lightable.css" rel="stylesheet" />
+
+
+<div id="youth-risk-behavior-surveillance" class="section level1">
+<h1>Youth Risk Behavior Surveillance</h1>
+<p>Every two years, the Centers for Disease Control and Prevention conduct the <a href="https://www.cdc.gov/healthyyouth/data/yrbs/index.htm">Youth Risk Behavior Surveillance System (YRBSS)</a> survey, where it takes data from high schoolers (9th through 12th grade), to analyze health patterns. You will work with a selected group of variables from a random sample of observations during one of the years the YRBSS was conducted.</p>
+<div id="load-the-data" class="section level2">
+<h2>Load the data</h2>
+<p>This data is part of the <code>openintro</code> textbook and we can load and inspect it. There are observations on 13 different variables, some categorical and some numerical. The meaning of each variable can be found by bringing up the help file:</p>
+<p>?yrbss</p>
+<pre class="r"><code>data(yrbss)
+glimpse(yrbss)</code></pre>
+<pre><code>## Rows: 13,583
+## Columns: 13
+## $ age                      &lt;int&gt; 14, 14, 15, 15, 15, 15, 15, 14, 15, 15, 15, 1…
+## $ gender                   &lt;chr&gt; &quot;female&quot;, &quot;female&quot;, &quot;female&quot;, &quot;female&quot;, &quot;fema…
+## $ grade                    &lt;chr&gt; &quot;9&quot;, &quot;9&quot;, &quot;9&quot;, &quot;9&quot;, &quot;9&quot;, &quot;9&quot;, &quot;9&quot;, &quot;9&quot;, &quot;9&quot;, …
+## $ hispanic                 &lt;chr&gt; &quot;not&quot;, &quot;not&quot;, &quot;hispanic&quot;, &quot;not&quot;, &quot;not&quot;, &quot;not&quot;…
+## $ race                     &lt;chr&gt; &quot;Black or African American&quot;, &quot;Black or Africa…
+## $ height                   &lt;dbl&gt; NA, NA, 1.73, 1.60, 1.50, 1.57, 1.65, 1.88, 1…
+## $ weight                   &lt;dbl&gt; NA, NA, 84.4, 55.8, 46.7, 67.1, 131.5, 71.2, …
+## $ helmet_12m               &lt;chr&gt; &quot;never&quot;, &quot;never&quot;, &quot;never&quot;, &quot;never&quot;, &quot;did not …
+## $ text_while_driving_30d   &lt;chr&gt; &quot;0&quot;, NA, &quot;30&quot;, &quot;0&quot;, &quot;did not drive&quot;, &quot;did not…
+## $ physically_active_7d     &lt;int&gt; 4, 2, 7, 0, 2, 1, 4, 4, 5, 0, 0, 0, 4, 7, 7, …
+## $ hours_tv_per_school_day  &lt;chr&gt; &quot;5+&quot;, &quot;5+&quot;, &quot;5+&quot;, &quot;2&quot;, &quot;3&quot;, &quot;5+&quot;, &quot;5+&quot;, &quot;5+&quot;,…
+## $ strength_training_7d     &lt;int&gt; 0, 0, 0, 0, 1, 0, 2, 0, 3, 0, 3, 0, 0, 7, 7, …
+## $ school_night_hours_sleep &lt;chr&gt; &quot;8&quot;, &quot;6&quot;, &quot;&lt;5&quot;, &quot;6&quot;, &quot;9&quot;, &quot;8&quot;, &quot;9&quot;, &quot;6&quot;, &quot;&lt;5&quot;…</code></pre>
+<p>Before you carry on with your analysis, it’s is always a good idea to check with <code>skimr::skim()</code> to get a feel for missing values, summary statistics of numerical variables, and a very rough histogram.</p>
+</div>
+<div id="exploratory-data-analysis" class="section level2">
+<h2>Exploratory Data Analysis</h2>
+<p>You will first start with analyzing the <code>weight</code> of participants in kilograms. Using visualization and summary statistics, describe the distribution of weights. How many observations are we missing weights from?</p>
+<pre class="r"><code>skim(yrbss)</code></pre>
+<table style="width: auto;" class="table table-condensed">
+<caption>
+(#tab:eda_on_weight)Data summary
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:left;">
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Name
+</td>
+<td style="text-align:left;">
+yrbss
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of rows
+</td>
+<td style="text-align:left;">
+13583
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Number of columns
+</td>
+<td style="text-align:left;">
+13
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+_______________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Column type frequency:
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+character
+</td>
+<td style="text-align:left;">
+8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+numeric
+</td>
+<td style="text-align:left;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+________________________
+</td>
+<td style="text-align:left;">
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Group variables
+</td>
+<td style="text-align:left;">
+None
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+empty
+</th>
+<th style="text-align:right;">
+n_unique
+</th>
+<th style="text-align:right;">
+whitespace
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+gender
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+1.00
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+grade
+</td>
+<td style="text-align:right;">
+79
+</td>
+<td style="text-align:right;">
+0.99
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+hispanic
+</td>
+<td style="text-align:right;">
+231
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+race
+</td>
+<td style="text-align:right;">
+2805
+</td>
+<td style="text-align:right;">
+0.79
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+41
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+helmet_12m
+</td>
+<td style="text-align:right;">
+311
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+text_while_driving_30d
+</td>
+<td style="text-align:right;">
+918
+</td>
+<td style="text-align:right;">
+0.93
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+hours_tv_per_school_day
+</td>
+<td style="text-align:right;">
+338
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+school_night_hours_sleep
+</td>
+<td style="text-align:right;">
+1248
+</td>
+<td style="text-align:right;">
+0.91
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left;">
+skim_variable
+</th>
+<th style="text-align:right;">
+n_missing
+</th>
+<th style="text-align:right;">
+complete_rate
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+p0
+</th>
+<th style="text-align:right;">
+p25
+</th>
+<th style="text-align:right;">
+p50
+</th>
+<th style="text-align:right;">
+p75
+</th>
+<th style="text-align:right;">
+p100
+</th>
+<th style="text-align:left;">
+hist
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+age
+</td>
+<td style="text-align:right;">
+77
+</td>
+<td style="text-align:right;">
+0.99
+</td>
+<td style="text-align:right;">
+16.16
+</td>
+<td style="text-align:right;">
+1.26
+</td>
+<td style="text-align:right;">
+12.00
+</td>
+<td style="text-align:right;">
+15.0
+</td>
+<td style="text-align:right;">
+16.00
+</td>
+<td style="text-align:right;">
+17.00
+</td>
+<td style="text-align:right;">
+18.00
+</td>
+<td style="text-align:left;">
+▁▂▅▅▇
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+height
+</td>
+<td style="text-align:right;">
+1004
+</td>
+<td style="text-align:right;">
+0.93
+</td>
+<td style="text-align:right;">
+1.69
+</td>
+<td style="text-align:right;">
+0.10
+</td>
+<td style="text-align:right;">
+1.27
+</td>
+<td style="text-align:right;">
+1.6
+</td>
+<td style="text-align:right;">
+1.68
+</td>
+<td style="text-align:right;">
+1.78
+</td>
+<td style="text-align:right;">
+2.11
+</td>
+<td style="text-align:left;">
+▁▅▇▃▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+weight
+</td>
+<td style="text-align:right;">
+1004
+</td>
+<td style="text-align:right;">
+0.93
+</td>
+<td style="text-align:right;">
+67.91
+</td>
+<td style="text-align:right;">
+16.90
+</td>
+<td style="text-align:right;">
+29.94
+</td>
+<td style="text-align:right;">
+56.2
+</td>
+<td style="text-align:right;">
+64.41
+</td>
+<td style="text-align:right;">
+76.20
+</td>
+<td style="text-align:right;">
+180.99
+</td>
+<td style="text-align:left;">
+▆▇▂▁▁
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+physically_active_7d
+</td>
+<td style="text-align:right;">
+273
+</td>
+<td style="text-align:right;">
+0.98
+</td>
+<td style="text-align:right;">
+3.90
+</td>
+<td style="text-align:right;">
+2.56
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+2.0
+</td>
+<td style="text-align:right;">
+4.00
+</td>
+<td style="text-align:right;">
+7.00
+</td>
+<td style="text-align:right;">
+7.00
+</td>
+<td style="text-align:left;">
+▆▂▅▃▇
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+strength_training_7d
+</td>
+<td style="text-align:right;">
+1176
+</td>
+<td style="text-align:right;">
+0.91
+</td>
+<td style="text-align:right;">
+2.95
+</td>
+<td style="text-align:right;">
+2.58
+</td>
+<td style="text-align:right;">
+0.00
+</td>
+<td style="text-align:right;">
+0.0
+</td>
+<td style="text-align:right;">
+3.00
+</td>
+<td style="text-align:right;">
+5.00
+</td>
+<td style="text-align:right;">
+7.00
+</td>
+<td style="text-align:left;">
+▇▂▅▂▅
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>favstats(~weight, data=yrbss) %&gt;% 
+  kbl(caption = &quot;Table 1.1 &quot;) %&gt;%
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+(#tab:eda_on_weight)Table 1.1
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+</th>
+<th style="text-align:right;">
+min
+</th>
+<th style="text-align:right;">
+Q1
+</th>
+<th style="text-align:right;">
+median
+</th>
+<th style="text-align:right;">
+Q3
+</th>
+<th style="text-align:right;">
+max
+</th>
+<th style="text-align:right;">
+mean
+</th>
+<th style="text-align:right;">
+sd
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+missing
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+</td>
+<td style="text-align:right;">
+29.9
+</td>
+<td style="text-align:right;">
+56.2
+</td>
+<td style="text-align:right;">
+64.4
+</td>
+<td style="text-align:right;">
+76.2
+</td>
+<td style="text-align:right;">
+181
+</td>
+<td style="text-align:right;">
+67.9
+</td>
+<td style="text-align:right;">
+16.9
+</td>
+<td style="text-align:right;">
+12579
+</td>
+<td style="text-align:right;">
+1004
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>ggplot(yrbss,aes(weight))+
+  geom_histogram()+
+  labs(caption=&quot;Data visualisation for weight distribution&quot;)+
+  theme(plot.caption = element_text(hjust = 0))</code></pre>
+<p><img src="/blogs/hwthree_files/figure-html/eda_on_weight-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>The distribution for weight in kilograms is positively skewed with a tail on the right side, illustrating how most values remain between 56.2 (Q1) and 76.3 (Q3) with a mean of 67.9 and standard deviation of 16.9, while there are some values that are much higher such as the maximum weight of 181 kg. There are 1004 missing observations.</p>
+<p>Next, we consider the possible relationship between a high schooler’s weight and their physical activity. Plotting the data is a useful first step because it helps us quickly visualize trends, identify strong associations, and develop research questions.</p>
+<p>We create a new variable in the dataframe <code>yrbss</code>, called <code>physical_3plus</code> , which will be <code>yes</code> if they are physically active for at least 3 days a week, and <code>no</code> otherwise. You may also want to calculate the number and % of those who are and are not active for more than 3 days. RUse the <code>count()</code> function and see if you get the same results as <code>group_by()... summarise()</code></p>
+<p>The two tables below show the count using both methods. Table 1.3 shows this with the group by method. The proportions have also been calculated and shown.</p>
+<pre class="r"><code>yrbss2 &lt;-  yrbss %&gt;% 
+  mutate(physical_3plus = case_when(physically_active_7d &gt;= 3~&quot;yes&quot;,
+         physically_active_7d  &lt; 3~&quot;no&quot;)) %&gt;% 
+  drop_na(physical_3plus)
+
+yrbss2 %&gt;% 
+  count(physical_3plus,sort=TRUE) %&gt;% 
+  mutate(proportion = n/sum(n)) %&gt;% 
+  kbl(caption = &quot;Table 1.2: Count and proportions &quot;) %&gt;%
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+(#tab:mutate_and_count)Table 1.2: Count and proportions
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+physical_3plus
+</th>
+<th style="text-align:right;">
+n
+</th>
+<th style="text-align:right;">
+proportion
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+yes
+</td>
+<td style="text-align:right;">
+8906
+</td>
+<td style="text-align:right;">
+0.669
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+4404
+</td>
+<td style="text-align:right;">
+0.331
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># group by and summarise method 
+
+yrbss %&gt;%
+ mutate(physical_3plus = case_when(physically_active_7d &gt;= 3~&quot;yes&quot;,
+ physically_active_7d  &lt; 3~&quot;no&quot;)) %&gt;% 
+   drop_na(physical_3plus) %&gt;% 
+ group_by(physical_3plus) %&gt;%
+  count() %&gt;%  
+  kbl(caption = &quot;Table 1.3: Count using group by method &quot;) %&gt;%
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+(#tab:mutate_and_count)Table 1.3: Count using group by method
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+physical_3plus
+</th>
+<th style="text-align:right;">
+n
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+4404
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+yes
+</td>
+<td style="text-align:right;">
+8906
+</td>
+</tr>
+</tbody>
+</table>
+<p>The answer is the same for both methods as we can see above.</p>
+<div id="confidence-interval-for-the-population-proportion-of-high-schools-that-are-not-active-3-or-more-days-per-week" class="section level3">
+<h3>95% confidence interval for the population proportion of high schools that are <em>NOT</em> active 3 or more days per week:</h3>
+<pre class="r"><code>library(infer)
+library(kableExtra)
+
+set.seed(1234)
+
+ci_prophighschool_notactive&lt;-yrbss2 %&gt;%
+  filter(grade&gt;=9,physical_3plus != &quot;NA&quot;) %&gt;%
+  specify(response=physical_3plus,success=&quot;no&quot;) %&gt;%
+  generate(reps=1000, type=&quot;bootstrap&quot;) %&gt;%
+  calculate(stat=&quot;prop&quot;)
+
+
+bootstrap_ci &lt;- ci_prophighschool_notactive %&gt;%
+  get_ci(level=0.95, type=&quot;percentile&quot;)
+  
+colnames(bootstrap_ci) = c(&quot;Lower CI&quot;,&quot;Upper CI&quot;)
+
+bootstrap_ci %&gt;% 
+  kbl(caption = &quot;Table 1.4 &quot;) %&gt;%
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:unnamed-chunk-2">Table 1: </span>Table 1.4
+</caption>
+<thead>
+<tr>
+<th style="text-align:right;">
+Lower CI
+</th>
+<th style="text-align:right;">
+Upper CI
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0.282
+</td>
+<td style="text-align:right;">
+0.313
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="boxplot-of-physical_3plus-vs.-weight.-is-there-a-relationship-between-these-two-variables-what-did-you-expect-and-why" class="section level3">
+<h3>Boxplot of <code>physical_3plus</code> vs. <code>weight</code>. Is there a relationship between these two variables? What did you expect and why?</h3>
+<pre class="r"><code>yrbss2 %&gt;% 
+  select(physical_3plus,weight) %&gt;% 
+  drop_na(physical_3plus,weight) %&gt;% 
+  ggplot(aes(physical_3plus,weight))+geom_boxplot()+
+  labs(x=&quot;Physically Active for more than 3 days&quot;,
+       y= &quot;Weight&quot;,
+       caption = &quot;Figure 1.1&quot;)+
+  theme(plot.caption = element_text(hjust=0))</code></pre>
+<p><img src="/blogs/hwthree_files/figure-html/boxplot-1.png" width="648" style="display: block; margin: auto;" />
+While it might be a bit surprising, we observe no strong relationship between weight and whether students are physically active for more than 3 days. Figure 1.1 shows that the mean weight is higher for students who are more physically active which seems counter intuitive if we think about overweight students who do not exercise but it might be because students do weight training and have more muscle mass.</p>
+</div>
+</div>
+<div id="confidence-interval" class="section level2">
+<h2>Confidence Interval</h2>
+<p>Boxplots show how the medians of the two distributions compare, but we can also compare the means of the distributions using either a confidence interval or a hypothesis test.</p>
+<div id="statistical-values-using-the-formula-method." class="section level3">
+<h3>Statistical values using the formula method.</h3>
+<p>We will first remove the NA values from our two columns of interest that is the ‘physical_3plus’ and ‘weight’. The data has been added to table format using the kableExtra function.</p>
+<pre class="r"><code>formula_ci &lt;- yrbss2 %&gt;%
+  group_by(physical_3plus) %&gt;%
+  drop_na(physical_3plus,weight) %&gt;% 
+  summarise(mean_weight = mean(weight,na.rm=TRUE),
+            median_weight = median(weight,na.rm=TRUE),
+            sd_weight = sd(weight,na.rm=TRUE),
+            count = n(),
+            # get t-critical value with (n-1) degrees of freedom
+            t_critical = qt(0.975, count-1),
+            se_weight = sd_weight/sqrt(count),
+            margin_of_error = t_critical * se_weight,
+            weight_low = mean_weight - margin_of_error,
+            weight_high = mean_weight + margin_of_error
+  ) %&gt;% 
+  arrange(desc(mean_weight))
+
+ colnames(formula_ci) &lt;- c(&quot;Physically Active &gt;3 days&quot;,&quot;Mean Weight&quot;,&quot;Median Weight&quot;,&quot;Standard Deviation of weight&quot;,&quot;Count&quot;,&quot; T critical&quot;,&quot;Standard Error Weight&quot;,&quot;Margin of Error&quot;,&quot;Lower Weight Interval&quot;,&quot;Upper Weight Interval&quot;)
+ 
+ formula_ci %&gt;% 
+  kbl(caption = &quot;Table 1.5&quot;) %&gt;%
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+(#tab:ci_using_formulas)Table 1.5
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Physically Active &gt;3 days
+</th>
+<th style="text-align:right;">
+Mean Weight
+</th>
+<th style="text-align:right;">
+Median Weight
+</th>
+<th style="text-align:right;">
+Standard Deviation of weight
+</th>
+<th style="text-align:right;">
+Count
+</th>
+<th style="text-align:right;">
+T critical
+</th>
+<th style="text-align:right;">
+Standard Error Weight
+</th>
+<th style="text-align:right;">
+Margin of Error
+</th>
+<th style="text-align:right;">
+Lower Weight Interval
+</th>
+<th style="text-align:right;">
+Upper Weight Interval
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+yes
+</td>
+<td style="text-align:right;">
+68.4
+</td>
+<td style="text-align:right;">
+65.8
+</td>
+<td style="text-align:right;">
+16.5
+</td>
+<td style="text-align:right;">
+8342
+</td>
+<td style="text-align:right;">
+1.96
+</td>
+<td style="text-align:right;">
+0.180
+</td>
+<td style="text-align:right;">
+0.354
+</td>
+<td style="text-align:right;">
+68.1
+</td>
+<td style="text-align:right;">
+68.8
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+no
+</td>
+<td style="text-align:right;">
+66.7
+</td>
+<td style="text-align:right;">
+62.6
+</td>
+<td style="text-align:right;">
+17.6
+</td>
+<td style="text-align:right;">
+4022
+</td>
+<td style="text-align:right;">
+1.96
+</td>
+<td style="text-align:right;">
+0.278
+</td>
+<td style="text-align:right;">
+0.545
+</td>
+<td style="text-align:right;">
+66.1
+</td>
+<td style="text-align:right;">
+67.2
+</td>
+</tr>
+</tbody>
+</table>
+<p>There is an observed difference of about 1.77kg (68.44 - 66.67), and we notice that the two confidence intervals do not overlap. It seems that the difference is at least 95% statistically significant. Let us also conduct a hypothesis test.</p>
+</div>
+</div>
+<div id="hypothesis-test-with-formula" class="section level2">
+<h2>Hypothesis test with formula</h2>
+<p>Write the null and alternative hypotheses for testing whether mean weights are different for those who exercise at least times a week and those who don’t.</p>
+<pre class="r"><code>t.test(weight ~ physical_3plus, data = yrbss2)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  weight by physical_3plus
+## t = -5, df = 7479, p-value = 9e-08
+## alternative hypothesis: true difference in means between group no and group yes is not equal to 0
+## 95 percent confidence interval:
+##  -2.42 -1.12
+## sample estimates:
+##  mean in group no mean in group yes 
+##              66.7              68.4</code></pre>
+<p>The null hypothesis is that there is no difference for those who exercise at least times a week and those who don’t. The alternative hypothesis is that we can observe a difference for those who exercise at least times a week and those who don’t.</p>
+</div>
+<div id="hypothesis-test-with-infer" class="section level2">
+<h2>Hypothesis test with <code>infer</code></h2>
+<p>Next, we will introduce a new function, <code>hypothesize</code>, that falls into the infer workflow. You will use this method for conducting hypothesis tests.</p>
+<p>But first, we need to initialize the test, which we will save as <code>obs_diff</code>.</p>
+<pre class="r"><code>obs_diff &lt;- yrbss2 %&gt;%
+  specify(weight ~ physical_3plus) %&gt;%
+  calculate(stat = &quot;diff in means&quot;, order = c(&quot;yes&quot;, &quot;no&quot;))</code></pre>
+<pre class="r"><code>null_dist &lt;- yrbss2 %&gt;%
+  # specify variables
+  specify(weight ~ physical_3plus) %&gt;%
+  
+  # assume independence, i.e, there is no difference
+  hypothesize(null = &quot;independence&quot;) %&gt;%
+  
+  # generate 1000 reps, of type &quot;permute&quot;
+  generate(reps = 1000, type = &quot;permute&quot;) %&gt;%
+  
+  # calculate statistic of difference, namely &quot;diff in means&quot;
+  calculate(stat = &quot;diff in means&quot;, order = c(&quot;yes&quot;, &quot;no&quot;))</code></pre>
+<p>Here, <code>hypothesize</code> is used to set the null hypothesis as a test for independence, i.e., that there is no difference between the two population means. In one sample cases, the null argument can be set to <em>point</em> to test a hypothesis relative to a point estimate.</p>
+<p>Also, note that the <code>type</code> argument within generate is set to permute, which is the argument when generating a null distribution for a hypothesis test.We can visualize this null distribution with the following code:</p>
+<pre class="r"><code>ggplot(data = null_dist, aes(x = stat)) +
+  geom_histogram()+
+  labs(x=&quot;Difference in Means&quot;,
+       caption = &quot;Figure 1.2&quot;)+
+  theme(plot.caption = element_text(hjust=0))</code></pre>
+<p><img src="/blogs/hwthree_files/figure-html/unnamed-chunk-3-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Now that the test is initialized and the null distribution formed, we can visualise to see how many of these null permutations have a difference of at least <code>obs_stat</code> of 1.77?</p>
+<p>We can also calculate the p-value for your hypothesis test using the function <code>infer::get_p_value()</code>.</p>
+<pre class="r"><code>null_dist %&gt;% visualize() +
+  shade_p_value(obs_stat = obs_diff, direction = &quot;two-sided&quot;)</code></pre>
+<p><img src="/blogs/hwthree_files/figure-html/unnamed-chunk-4-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>null_dist %&gt;%
+  get_p_value(obs_stat = obs_diff, direction = &quot;two_sided&quot;)</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   p_value
+##     &lt;dbl&gt;
+## 1       0</code></pre>
+<p>This the standard workflow for performing hypothesis tests.</p>
+</div>
+</div>
+<div id="imdb-ratings-differences-between-directors" class="section level1">
+<h1>IMDB ratings: Differences between directors</h1>
+<p>We start by exploring whether the mean IMDB rating for Steven Spielberg and Tim Burton are the same or not. We see the already calculated the confidence intervals for the mean ratings of these two directors that overlap..</p>
+<p><img src="/Users/xxdehh/Desktop/RR/my_website/images/directors.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>First, we reproduce the graph above. In addition, we will run a hypothesis test, using both the <code>t.test</code> command and the <code>infer</code> package to simulate from a null distribution, where we assume zero difference between the two.</p>
+<blockquote>
+<p>Null hypothesis: Spielberg and Burton have the same mean IMDB ratings.
+Alternative Hypothesis: Speilberg and Burton doesn’t have the same mean IMDB ratings.
+The sample mean of Spielberg’s mean IMDB ratings is 7.57 and the confidence interval range from 7.27 to 7.87. The sample mean of Burton’s mean IMDB ratings is 6.93 and the confidence interval from 6.53 to 7.33.
+The t-stat for the hypothesis test is 0.01, which is smaller than 95% confidence interval p-value. The 95% confidence interval range is from 0.16 to 1.13, so 0 is out of the confidence interval. Therefore, there’s enough evidence for us to conclude that we can do that Speilberg and Burton doesn’t have the same population mean IMDB ratings.</p>
+</blockquote>
+<p>You can load the data and examine its structure</p>
+<pre class="r"><code>movies &lt;- read_csv(here::here(&quot;~/Desktop/RR/my_website&quot;, &quot;movies.csv&quot;))
+glimpse(movies)</code></pre>
+<pre><code>## Rows: 2,961
+## Columns: 11
+## $ title               &lt;chr&gt; &quot;Avatar&quot;, &quot;Titanic&quot;, &quot;Jurassic World&quot;, &quot;The Avenge…
+## $ genre               &lt;chr&gt; &quot;Action&quot;, &quot;Drama&quot;, &quot;Action&quot;, &quot;Action&quot;, &quot;Action&quot;, &quot;…
+## $ director            &lt;chr&gt; &quot;James Cameron&quot;, &quot;James Cameron&quot;, &quot;Colin Trevorrow…
+## $ year                &lt;dbl&gt; 2009, 1997, 2015, 2012, 2008, 1999, 1977, 2015, 20…
+## $ duration            &lt;dbl&gt; 178, 194, 124, 173, 152, 136, 125, 141, 164, 93, 1…
+## $ gross               &lt;dbl&gt; 7.61e+08, 6.59e+08, 6.52e+08, 6.23e+08, 5.33e+08, …
+## $ budget              &lt;dbl&gt; 2.37e+08, 2.00e+08, 1.50e+08, 2.20e+08, 1.85e+08, …
+## $ cast_facebook_likes &lt;dbl&gt; 4834, 45223, 8458, 87697, 57802, 37723, 13485, 920…
+## $ votes               &lt;dbl&gt; 886204, 793059, 418214, 995415, 1676169, 534658, 9…
+## $ reviews             &lt;dbl&gt; 3777, 2843, 1934, 2425, 5312, 3917, 1752, 1752, 35…
+## $ rating              &lt;dbl&gt; 7.9, 7.7, 7.0, 8.1, 9.0, 6.5, 8.7, 7.5, 8.5, 7.2, …</code></pre>
+<pre class="r"><code>grouped_table &lt;- movies %&gt;% filter(director %in% c(&quot;Steven Spielberg&quot;, &quot;Tim Burton&quot;)) %&gt;% group_by(director)
+clean_table &lt;- grouped_table  %&gt;% summarise(mean = mean(rating), sd = sd(rating), sample_size = n(), se = sd/sqrt(sample_size), t_critical = qt(0.975, sample_size -1), lower = mean - t_critical * se, upper = mean + t_critical * se)
+
+clean_table %&gt;% ggplot() + 
+  geom_errorbarh(aes(y = director, xmax = upper, xmin = lower, colour = director), width = 0.1, size = 2) +
+  geom_point(aes(x = mean, y = director, colour = director), size = 5) + 
+  geom_text(x = clean_table$upper, y = clean_table$director, label = round(clean_table$upper,2), vjust = -2, size = 4) +
+  geom_text(x = clean_table$lower, y = clean_table$director, label = round(clean_table$lower,2), vjust = -2, size = 4) +
+  geom_text(x = clean_table$mean, y = clean_table$director, label = round(clean_table$mean,2), vjust = -2, size = 5) +
+  geom_rect(xmin = 7.27, xmax = 7.33, ymin = -Inf, ymax = Inf, alpha = 0.2) +
+  labs(
+    title = &quot;Do Speilberg and Burton have the same mean IMDB ratings&quot;,
+    subtitle = &quot;95% percent confidence interval overlap&quot;,
+    x = &quot;mean IMDB ratings&quot;
+  ) +
+  theme_bw()</code></pre>
+<p><img src="/blogs/hwthree_files/figure-html/unnamed-chunk-5-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># Hypothesis Test
+## t.test()
+t.test(rating ~ director ,data = grouped_table)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  rating by director
+## t = 3, df = 31, p-value = 0.01
+## alternative hypothesis: true difference in means between group Steven Spielberg and group Tim Burton is not equal to 0
+## 95 percent confidence interval:
+##  0.16 1.13
+## sample estimates:
+## mean in group Steven Spielberg       mean in group Tim Burton 
+##                           7.57                           6.93</code></pre>
+<pre class="r"><code>## infer 
+set.seed(1234)
+infer_table &lt;- grouped_table %&gt;% specify(rating ~ director) %&gt;% hypothesise(null = &quot;independence&quot;) %&gt;% generate(reps = 1000, type = &quot;permute&quot;) %&gt;% calculate(stat = &quot;diff in means&quot;) 
+
+observed_stat &lt;- grouped_table %&gt;% specify(rating ~ director) %&gt;% calculate(stat = &quot;diff in means&quot;)
+
+infer_table %&gt;% get_pvalue(obs_stat = observed_stat, direction = &quot;both&quot;)</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   p_value
+##     &lt;dbl&gt;
+## 1   0.008</code></pre>
+</div>
+<div id="omega-group-plc--pay-discrimination" class="section level1">
+<h1>Omega Group plc- Pay Discrimination</h1>
+<p>At the last board meeting of Omega Group Plc., the headquarters of a large multinational company, the issue was raised that women were being discriminated in the company, in the sense that the salaries were not the same for male and female executives. A quick analysis of a sample of 50 employees (of which 24 men and 26 women) revealed that the average salary for men was about 8,700 higher than for women. This seemed like a considerable difference, so it was decided that a further analysis of the company salaries was warranted.</p>
+<p>You are asked to carry out the analysis. The objective is to find out whether there is indeed a significant difference between the salaries of men and women, and whether the difference is due to discrimination or whether it is based on another, possibly valid, determining factor.</p>
+<div id="loading-the-data" class="section level2">
+<h2>Loading the data</h2>
+<pre class="r"><code>omega &lt;- read_csv(here::here(&quot;~/Desktop/RR/my_website&quot;, &quot;omega.csv&quot;))
+glimpse(omega) # examine the data frame</code></pre>
+<pre><code>## Rows: 50
+## Columns: 3
+## $ salary     &lt;dbl&gt; 81894, 69517, 68589, 74881, 65598, 76840, 78800, 70033, 635…
+## $ gender     &lt;chr&gt; &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;male&quot;, &quot;ma…
+## $ experience &lt;dbl&gt; 16, 25, 15, 33, 16, 19, 32, 34, 1, 44, 7, 14, 33, 19, 24, 3…</code></pre>
+</div>
+<div id="relationship-salary---gender" class="section level2">
+<h2>Relationship Salary - Gender ?</h2>
+<p>The data frame <code>omega</code> contains the salaries for the sample of 50 executives in the company. Can you conclude that there is a significant difference between the salaries of the male and female executives?</p>
+<p>We can perform different types of analyses, and check whether they all lead to the same conclusion</p>
+<p>. Confidence intervals
+. Hypothesis testing
+. Correlation analysis
+. Regression</p>
+<p>First, we calculate summary statistics on salary by gender. Also, we create and print a dataframe where, for each gender, we show the mean, SD, sample size, the t-critical, the SE, the margin of error, and the low/high endpoints of a 95% confidence interval</p>
+<pre class="r"><code># Summary Statistics of salary by gender
+mosaic::favstats (salary ~ gender, data=omega)</code></pre>
+<pre><code>##   gender   min    Q1 median    Q3   max  mean   sd  n missing
+## 1 female 47033 60338  64618 70033 78800 64543 7567 26       0
+## 2   male 54768 68331  74675 78568 84576 73239 7463 24       0</code></pre>
+<pre class="r"><code># Dataframe with two rows (male-female) and having as columns gender, mean, SD, sample size, 
+# the t-critical value, the standard error, the margin of error, 
+# and the low/high endpoints of a 95% condifence interval
+summary_table &lt;- omega %&gt;% 
+  group_by(gender) %&gt;% 
+  summarise(mean = mean(salary), SD = sd(salary), sample_size = n(), t_criticle = qt(0.975, sample_size - 1), SE = SD/sqrt(sample_size), margin_of_error = t_criticle * SE, lower = mean - t_criticle * SE, upper = mean + t_criticle * SE) </code></pre>
+<blockquote>
+<p>We observe that the mean salary for men is higher (73239) than for women (64543), the standard deviation is around the same, a bit higher (100 more) for women. Women’s minimum and maximum salaries are also lower. There are 26 observations for women, 24 for men with no missing values in the dataframe.</p>
+</blockquote>
+<p>We can also run a hypothesis testing, assuming as a null hypothesis that the mean difference in salaries is zero, or that, on average, men and women make the same amount of money. You should tun your hypothesis testing using <code>t.test()</code> and with the simulation method from the <code>infer</code> package.</p>
+<pre class="r"><code># hypothesis testing using t.test() 
+t.test(salary ~ gender, data = omega)</code></pre>
+<pre><code>## 
+##  Welch Two Sample t-test
+## 
+## data:  salary by gender
+## t = -4, df = 48, p-value = 2e-04
+## alternative hypothesis: true difference in means between group female and group male is not equal to 0
+## 95 percent confidence interval:
+##  -12973  -4420
+## sample estimates:
+## mean in group female   mean in group male 
+##                64543                73239</code></pre>
+<pre class="r"><code># hypothesis testing using infer package
+set.seed(1234)
+infer_table &lt;- omega %&gt;% 
+  specify(salary ~ gender) %&gt;% 
+  hypothesise(null = &quot;independence&quot;) %&gt;% 
+  generate(reps = 1000, type = &quot;permute&quot;) %&gt;% 
+  calculate(stat = &quot;diff in means&quot;)
+
+mean &lt;- omega %&gt;% 
+  filter(gender == &quot;female&quot;) %&gt;% 
+  summarise(mean = mean(salary))
+
+observed_stats &lt;- omega %&gt;% 
+  specify(salary ~ gender) %&gt;% 
+  calculate(stat = &quot;diff in means&quot;)
+infer_table %&gt;% 
+  get_pvalue(obs_stat = observed_stats, direction = &quot;both&quot;)</code></pre>
+<pre><code>## # A tibble: 1 × 1
+##   p_value
+##     &lt;dbl&gt;
+## 1       0</code></pre>
+<blockquote>
+<p>We are confidence to reject the NUll Hypothese and say that the true difference between group males and females is not eaqual to 0. 0 is out of the 95% percent confidence interval and the t-score is bigger than 1.96. Therefore, the gap between mean of salaries between male and female in the sample doesn’t happen by accident.</p>
+</blockquote>
+</div>
+<div id="relationship-experience---gender" class="section level2">
+<h2>Relationship Experience - Gender?</h2>
+<p>At the board meeting, someone raised the issue that there was indeed a substantial difference between male and female salaries, but that this was attributable to other reasons such as differences in experience. A questionnaire send out to the 50 executives in the sample reveals that the average experience of the men is approximately 21 years, whereas the women only have about 7 years experience on average (see table below).</p>
+<pre class="r"><code># Summary Statistics of salary by gender
+favstats (experience ~ gender, data=omega)</code></pre>
+<pre><code>##   gender min    Q1 median   Q3 max  mean    sd  n missing
+## 1 female   0  0.25    3.0 14.0  29  7.38  8.51 26       0
+## 2   male   1 15.75   19.5 31.2  44 21.12 10.92 24       0</code></pre>
+<blockquote>
+<p>We can see that the average experience for women (7.38 years) is indeed lower than for men (21.12), this conclusion does not endanger our conclusion that there is a difference in male and female salaries, it just offers a possible explanation as to why the salaries are different. In a regression model, this would be considered an explanatory variable in our model.At this point we are not able to draw a conclusion whether there is gender-based salary discrimination.</p>
+</blockquote>
+</div>
+<div id="relationship-salary---experience" class="section level2">
+<h2>Relationship Salary - Experience ?</h2>
+<p>Someone at the meeting argues that clearly, a more thorough analysis of the relationship between salary and experience is required before any conclusion can be drawn about whether there is any gender-based salary discrimination in the company.</p>
+<p>We analyse the relationship between salary and experience. Draw a scatterplot to visually inspect the data</p>
+<pre class="r"><code>omega %&gt;% 
+  ggplot(aes(x = experience, y= salary)) +
+  geom_point() +
+  theme_bw()</code></pre>
+<p><img src="/blogs/hwthree_files/figure-html/salary_exp_scatter-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="check-correlations-between-the-data" class="section level2">
+<h2>Check correlations between the data</h2>
+<p>You can use <code>GGally:ggpairs()</code> to create a scatterplot and correlation matrix. Essentially, we change the order our variables will appear in and have the dependent variable (Y), salary, as last in our list. We then pipe the dataframe to <code>ggpairs()</code> with <code>aes</code> arguments to colour by <code>gender</code> and make ths plots somewhat transparent (<code>alpha  = 0.3</code>).</p>
+<pre class="r"><code>omega %&gt;% 
+  select(gender, experience, salary) %&gt;% #order variables they will appear in ggpairs()
+  ggpairs(aes(colour=gender, alpha = 0.3))+
+  theme_bw()</code></pre>
+<p><img src="/blogs/hwthree_files/figure-html/ggpairs-1.png" width="648" style="display: block; margin: auto;" /></p>
+<blockquote>
+<p>For both male and female, salary increase as experience increase. The experience of female is shorter than males in general. Also, the correlation between salary and experience is 0.8. Experience and salary is more correlated for female than males. Therefore, given the strong correlation and gap between males and female experience, the salary gap might not be caused by gender, but by other factor such as experience.</p>
+</blockquote>
+</div>
+</div>
+<div id="challenge-1-brexit-plot" class="section level1">
+<h1>Challenge 1: Brexit plot</h1>
+<p>Using your data manipulation and visualisation skills, please use the Brexit results dataframe (the same dataset you used in the pre-programme assignement) and produce the following plot. Use the correct colour for each party; google “UK Political Party Web Colours” and find the appropriate hex code for colours, not the default colours that R gives you.</p>
+<p><img src="/Users/xxdehh/Desktop/RR/my_website/images/brexit.png" width="100%" style="display: block; margin: auto;" /><img src="/blogs/hwthree_files/figure-html/brexit_challenge-2.png" width="100%" style="display: block; margin: auto;" /></p>
+</div>
+<div id="challenge-2gdp-components-over-time-and-among-countries" class="section level1">
+<h1>Challenge 2:GDP components over time and among countries</h1>
+<p>At the risk of oversimplifying things, the main components of gross domestic product, GDP are personal consumption (C), business investment (I), government spending (G) and net exports (exports - imports). You can read more about GDP and the different approaches in calculating at the <a href="https://en.wikipedia.org/wiki/Gross_domestic_product">Wikipedia GDP page</a>.</p>
+<p>The GDP data we will look at is from the <a href="https://unstats.un.org/unsd/snaama/Downloads">United Nations’ National Accounts Main Aggregates Database</a>, which contains estimates of total GDP and its components for all countries from 1970 to today. We will look at how GDP and its components have changed over time, and compare different countries and how much each component contributes to that country’s GDP. The file we will work with is <a href="http://unstats.un.org/unsd/amaapi/api/file/6">GDP and its breakdown at constant 2010 prices in US Dollars</a> and it has already been saved in the Data directory. Have a look at the Excel file to see how it is structured and organised</p>
+<pre class="r"><code>UN_GDP_data  &lt;-  read_excel(here::here(&quot;~/Desktop/RR/my_website&quot;, &quot;Download-GDPconstant-USD-countries.xls&quot;), # Excel filename
+                skip=2) # Number of rows to skip</code></pre>
+<p>The first thing you need to do is to tidy the data, as it is in wide format and you must make it into long, tidy format. Please express all figures in billions (divide values by <code>1e9</code>, or <span class="math inline">\(10^9\)</span>), and you want to rename the indicators into something shorter.</p>
+<pre class="r"><code>tidy_GDP_data  &lt;-  UN_GDP_data %&gt;%  
+  pivot_longer( cols = 4:51,
+                names_to = &#39;year&#39;,
+                values_to = &#39;value&#39;) %&gt;% 
+  mutate(value = value/1e9,
+         IndicatorName = replace(IndicatorName, IndicatorName == &#39;Exports of goods and services&#39;, &#39;Exports&#39;),
+         IndicatorName = replace(IndicatorName, IndicatorName == &#39;General government final consumption expenditure&#39;, &#39;Government expenditure&#39;),
+         IndicatorName = replace(IndicatorName, IndicatorName == &quot;Household consumption expenditure (including Non-profit institutions serving households)&quot;, &#39;Household expenditure&#39;),
+         IndicatorName = replace(IndicatorName, IndicatorName == &#39;Imports of goods and services&#39;, &#39;Imports&#39;))
+
+glimpse(tidy_GDP_data)</code></pre>
+<pre><code>## Rows: 176,880
+## Columns: 5
+## $ CountryID     &lt;dbl&gt; 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4,…
+## $ Country       &lt;chr&gt; &quot;Afghanistan&quot;, &quot;Afghanistan&quot;, &quot;Afghanistan&quot;, &quot;Afghanista…
+## $ IndicatorName &lt;chr&gt; &quot;Final consumption expenditure&quot;, &quot;Final consumption expe…
+## $ year          &lt;chr&gt; &quot;1970&quot;, &quot;1971&quot;, &quot;1972&quot;, &quot;1973&quot;, &quot;1974&quot;, &quot;1975&quot;, &quot;1976&quot;, …
+## $ value         &lt;dbl&gt; 5.56, 5.33, 5.20, 5.75, 6.15, 6.32, 6.37, 6.90, 7.09, 6.…</code></pre>
+<pre class="r"><code># Let us compare GDP components for these 3 countries
+country_list &lt;- c(&quot;United States&quot;,&quot;India&quot;, &quot;Germany&quot;)</code></pre>
+<p>First, can you produce this plot?</p>
+<p><img src="/Users/xxdehh/Desktop/RR/my_website/images/gdp1.png" width="100%" style="display: block; margin: auto;" /><img src="/blogs/hwthree_files/figure-html/gdp1-2.png" width="100%" style="display: block; margin: auto;" /></p>
+<p>Secondly, recall that GDP is the sum of Household Expenditure (Consumption <em>C</em>), Gross Capital Formation (business investment <em>I</em>), Government Expenditure (G) and Net Exports (exports - imports). Even though there is an indicator <code>Gross Domestic Product (GDP)</code> in your dataframe, I would like you to calculate it given its components discussed above.</p>
+<blockquote>
+<p>What is the % difference between what you calculated as GDP and the GDP figure included in the dataframe?</p>
+</blockquote>
+<p>As calculated below, For Germay, the % difference range from 1.0% to 1.04%. THe India range from 1.08% to 0.0%. United States range from 1.0% to 1.04%.</p>
+<p><img src="/Users/xxdehh/Desktop/RR/my_website/images/gdp2.png" width="100%" style="display: block; margin: auto;" /><img src="/blogs/hwthree_files/figure-html/gdp2-2.png" width="100%" style="display: block; margin: auto;" /><img src="/blogs/hwthree_files/figure-html/gdp2-3.png" width="100%" style="display: block; margin: auto;" /></p>
+<blockquote>
+<p>What is this last chart telling you? Can you explain in a couple of paragraphs the different dynamic among these three countries?</p>
+</blockquote>
+<blockquote>
+<p>Looking at Germany’s GDP breakdown, it’s interesting to note that household expenditures kept a quite steady proportion throughout the whole period, except around the 2008 financial crisis, of which the impact is quite noticeable for all three countries, with Germany’s gross capital formation also having a clear dip around that time. Germany being the only out of the three countries that is part of the European union, it is also interesting to note their exports increasing after the Maastricht, Amsterdam and Lisbon treaties were put into place. On a different note, we would also expect the reunification of the west and east Germanies to have a clear impact on the proportion of government expenditure, yet there does not seem to be.</p>
+<p>India’s GDP breakdown is quite different from Germany’s. The 2008 financial crisis is quite noticeable as well and seems to particularly have impacted exports, as other countries lost disposable income. It is interesting to note that the government expenditure is around 15% of the GDP throughout the whole period, yet that gross capital formation gains a bigger proportion whilst the proportion of household expenditure keeps on decreasing. We can infer that this is due to a growing population, with increased inequalities; bigger companies and more billionaires, but also more poverty, resulting in less household expenditure.</p>
+<p>The United States’ GDP split also showcases the impact of the 2008’s financial crisis, for instance with the Federal Reserve’s help towards the bank creating a small red bump in the late 2000s, early 2010s. Overall, government expenditure’s proportion kept on decreasing as republicans were in office, reducing government spending. It is interesting to note that other major financial crisis did not really impact the way the GDP is split up (2001, 1987).</p>
+</blockquote>
+</div>
+<div id="deliverables" class="section level1">
+<h1>Deliverables</h1>
+<p>There is a lot of explanatory text, comments, etc. You do not need these, so delete them and produce a stand-alone document that you could share with someone. Knit the edited and completed R Markdown file as an HTML document (use the “Knit” button at the top of the script editor window) and upload it to Canvas.</p>
+</div>
+<div id="details" class="section level1">
+<h1>Details</h1>
+<ul>
+<li>Who did you collaborate with: Emma Flutsch, Abdullah Rehman, Roberta Sildmae, Xiaohan Meng, Xu Xu</li>
+<li>Approximately how much time did you spend on this problem set: 3-4 days</li>
+<li>What, if anything, gave you the most trouble: ANSWER HERE</li>
+</ul>
+<p><strong>Please seek out help when you need it,</strong> and remember the <a href="https://mam2022.netlify.app/syllabus/#the-15-minute-rule" target="_blank">15-minute rule</a>. You know enough R (and have enough examples of code from class and your readings) to be able to do this. If you get stuck, ask for help from others, post a question on Slack– and remember that I am here to help too!</p>
+<blockquote>
+<p>As a true test to yourself, do you understand the code you submitted and are you able to explain it to someone else?</p>
+</blockquote>
+</div>
+<div id="rubric" class="section level1">
+<h1>Rubric</h1>
+<p>Check minus (1/5): Displays minimal effort. Doesn’t complete all components. Code is poorly written and not documented. Uses the same type of plot for each graph, or doesn’t use plots appropriate for the variables being analyzed.</p>
+<p>Check (3/5): Solid effort. Hits all the elements. No clear mistakes. Easy to follow (both the code and the output).</p>
+<p>Check plus (5/5): Finished all components of the assignment correctly and addressed both challenges. Code is well-documented (both self-documented and with additional comments as necessary). Used tidyverse, instead of base R. Graphs and tables are properly labelled. Analysis is clear and easy to follow, either because graphs are labeled clearly or you’ve written additional text to describe how you interpret the output.</p>
+</div>

@@ -81,22 +81,22 @@ params:
   tiles:
     enable: yes
     showcase:
-      - image: pic01.jpg
+      - image: xuu.jpg
        # subtitle: Ipsum Dolor Sit Amet
         title: About me 
-        url: blogs/xuxu
-      - image: pic02.jpg
+        url: blogs/self
+      - image: cv.jpeg
        # subtitle: Feugiat Amet Tempus
-        title: Tempus
-        url: blogs/tempus
+        title: Resume
+        url: blogs/xuxucv.pdf
       - image: pic03.jpg
        # subtitle: Lorem Etiam Nullam
-        title: Magna
-        url: blogs/magna
+        title: Pre-course session
+        url: blogs/xuxu
       - image: pic04.jpg
        # subtitle: Nisl Sed Aliquam
-        title: Ipsum
-        url: blogs/ipsum
+        title: challengs
+        url: blogs/hwthree
       - image: pic05.jpg
       #  subtitle: Ipsum Dolor Sit Amet
         title: Consequat
@@ -105,14 +105,14 @@ params:
       #  subtitle: Feugiat Amet Tempus
         title: Etiam
         url: blogs/ipsum
-  two:
-    buttonText: Get Started
-    enable: yes
-    subtitle: "Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero.
-      \n    Mauris aliquet magna magna sed nunc rhoncus pharetra. \n    Pellentesque
-      condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia
-      pellentesque lorem ipsum dolor. \n    Nullam et orci eu lorem consequat tincidunt.
-      Vivamus et sagittis libero.\n    Mauris aliquet magna magna sed nunc rhoncus
-      amet pharetra et feugiat tempus."
-    title: Massa libero
-    url: blogs
+  #two:
+    #buttonText: Get Started
+    #enable: yes
+    #subtitle: "Nullam et orci eu lorem consequat tincidunt vivamus et sagittis libero.
+      #\n    Mauris aliquet magna magna sed nunc rhoncus pharetra. \n    Pellentesque
+      #condimentum sem. In efficitur ligula tate urna. Maecenas laoreet massa vel lacinia
+      #pellentesque lorem ipsum dolor. \n    Nullam et orci eu lorem consequat tincidunt.
+      #Vivamus et sagittis libero.\n    Mauris aliquet magna magna sed nunc rhoncus
+      #amet pharetra et feugiat tempus."
+    #title: Massa libero
+    #url: blogs
