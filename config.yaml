@@ -61,21 +61,21 @@ params:
   image: ''
   name: Your name
   navigation:
-    button1:
-      - name: Get Started
-        url: blogs
+    #button1:
+      #- name: Get Started
+      #  url: blog
     button2:
       - name: Log In
         url: '#'
     links:
       - name: Home
         url: '#'
-      - name: Blogs
-        url: blogs
-      - name: Generic Blog
-        url: blogs/ipsum
-      - name: Elements
-        url: elements.html
+      #- name: Blogs
+      #  url: blogs
+      #- name: Generic Blog
+      #  url: blogs/ipsum
+      #- name: Elements
+      #  url: elements.html
     menu: Menu
     subtitle: By HTML5 Up
     title: Forty
@@ -86,23 +86,23 @@ params:
        # subtitle: Ipsum Dolor Sit Amet
         title: About me 
         url: blogs/self
-      - image: ro.jpg
+      - image: r.jpg
        # subtitle: Feugiat Amet Tempus
         title: Resume
         url: blogs/xuxucv.pdf
-      - image: shi.jpg
+      - image: t.jpg
        # subtitle: Lorem Etiam Nullam
         title: Pre-course session
         url: blogs/xuxu
-      - image: t.jpg
+      - image: plant.jpg
        # subtitle: Nisl Sed Aliquam
         title: project 1
         url: blogs/hwthree
-      - image: p.jpg
+      - image: w.jpg
       #  subtitle: Ipsum Dolor Sit Amet
         title: project 2 
-        url: blogs/ipsum
-      - image: sc.jpg
+        url: blogs/hwone
+      - image: y.jpg
       #  subtitle: Feugiat Amet Tempus
         title: project 3
         url: blogs/ipsum

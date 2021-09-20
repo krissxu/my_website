@@ -1,0 +1,2062 @@
+---
+categories:
+- ""
+- ""
+date: "2017-10-31T21:28:43-05:00"
+description: ""
+draft: false
+image: pic10.jpg
+keywords: ""
+slug: hwone
+title: Project 1
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+<link href="/rmarkdown-libs/lightable/lightable.css" rel="stylesheet" />
+
+
+<pre class="r"><code>library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(plyr)
+library(ggthemes)
+library(lubridate)
+library(fivethirtyeight)
+library(here)
+library(skimr)
+library(janitor)
+library(vroom)
+library(tidyquant)
+library(rvest) # to scrape wikipedia page
+library(kableExtra)
+library(dplyr)
+library(reshape2)
+librarian::reshelf(dplyr)</code></pre>
+<div id="where-do-people-drink-the-most-beer-wine-and-spirits" class="section level1">
+<h1>Where Do People Drink The Most Beer, Wine And Spirits?</h1>
+<p>Back in 2014, <a href="https://fivethirtyeight.com/features/dear-mona-followup-where-do-people-drink-the-most-beer-wine-and-spirits/">fivethiryeight.com</a> published an article on alchohol consumption in different countries. The data <code>drinks</code> is available as part of the <code>fivethirtyeight</code> package. Make sure you have installed the <code>fivethirtyeight</code> package before proceeding.</p>
+<pre class="r"><code>librarian::shelf(dplyr)
+library(fivethirtyeight)
+data(drinks)
+
+
+# or download directly
+# alcohol_direct &lt;- read_csv(&quot;https://raw.githubusercontent.com/fivethirtyeight/data/master/alcohol-consumption/drinks.csv&quot;)</code></pre>
+<p>What are the variable types? Any missing values we should worry about?
+They are three different variable types: character, integer, double. If we run the <code>sum(is.na(drinks))</code> function there is not any missing values.</p>
+<pre class="r"><code>glimpse(drinks)</code></pre>
+<pre><code>## Rows: 193
+## Columns: 5
+## $ country                      &lt;chr&gt; &quot;Afghanistan&quot;, &quot;Albania&quot;, &quot;Algeria&quot;, &quot;And…
+## $ beer_servings                &lt;int&gt; 0, 89, 25, 245, 217, 102, 193, 21, 261, 2…
+## $ spirit_servings              &lt;int&gt; 0, 132, 0, 138, 57, 128, 25, 179, 72, 75,…
+## $ wine_servings                &lt;int&gt; 0, 54, 14, 312, 45, 45, 221, 11, 212, 191…
+## $ total_litres_of_pure_alcohol &lt;dbl&gt; 0.0, 4.9, 0.7, 12.4, 5.9, 4.9, 8.3, 3.8, …</code></pre>
+<div id="top-25-beer-consuming-countries" class="section level2">
+<h2>Top 25 beer consuming countries</h2>
+<pre class="r"><code>drinks %&gt;% 
+  #select(beer_servings) %&gt;% 
+  slice_max(order_by = beer_servings, n=25) %&gt;% 
+  ggplot(aes(x= beer_servings,y= fct_reorder(country,beer_servings))) +
+  geom_col()+
+  theme_bw()+
+  labs(
+    title = &quot;Top 25 Beer Consuming Countries&quot;,
+    caption= &quot;Figure 1.1&quot;,
+    x = &quot;Beer Servings&quot;,
+    y = &quot;Country&quot;
+  )+
+  theme(plot.caption = element_text(hjust = 0))+
+  NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/beer_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="top-25-wine-consuming-countries" class="section level2">
+<h2>Top 25 wine consuming countries</h2>
+<pre class="r"><code>drinks %&gt;% 
+  slice_max(order_by = wine_servings, n=25) %&gt;% 
+  ggplot(aes(x= wine_servings,y= fct_reorder(country,wine_servings))) +
+  geom_col()+
+  theme_bw()+
+  labs(
+    title = &quot;Top 25 Wine Consuming Countries&quot;,
+    caption= &quot;Figure 1.2&quot;,
+    x = &quot;Wine Servings&quot;,
+    y = &quot;Country&quot;
+  )+
+  theme(plot.caption = element_text(hjust = 0))+
+  NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/wine_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="top-25-spirit-consuming-countries" class="section level2">
+<h2>Top 25 spirit consuming countries</h2>
+<pre class="r"><code>drinks %&gt;% 
+  slice_max(order_by = spirit_servings, n=25) %&gt;% 
+  ggplot(aes(x= spirit_servings,y= fct_reorder(country,spirit_servings))) +
+  geom_col()+
+  theme_bw()+
+  labs(
+    title = &quot;Top 25 Spirit Consuming Countries&quot;,
+    caption= &quot;Figure 1.3&quot;,
+    x = &quot;Spirit Servings&quot;,
+    y = &quot;Country&quot;
+  )+
+  theme(plot.caption = element_text(hjust = 0))+
+  NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/spirit_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+<blockquote>
+<p>What can you infer from these plots?</p>
+</blockquote>
+<p>The first two plots illustrate that most of the biggest wine and beer producers are also some of the top consumers. When looking at consumption by countries, it is interesting to note that the top 25 beer consuming countries have a relatively similar consumption in terms of servings, whereas in the other two categories the consumption varies by roughly 50% between the biggest and smallest consuming country within the top 25.</p>
+</div>
+</div>
+<div id="analysis-of-movies--imdb-dataset" class="section level1">
+<h1>Analysis of movies- IMDB dataset</h1>
+<p>We will look at a subset sample of movies, taken from the <a href="https://www.kaggle.com/carolzhangdc/imdb-5000-movie-dataset">Kaggle IMDB 5000 movie dataset</a></p>
+<pre class="r"><code>movies &lt;- read_csv(here::here(&quot;~/Desktop/RR/my_website&quot;, &quot;movies.csv&quot;))
+glimpse(movies)</code></pre>
+<pre><code>## Rows: 2,961
+## Columns: 11
+## $ title               &lt;chr&gt; &quot;Avatar&quot;, &quot;Titanic&quot;, &quot;Jurassic World&quot;, &quot;The Avenge…
+## $ genre               &lt;chr&gt; &quot;Action&quot;, &quot;Drama&quot;, &quot;Action&quot;, &quot;Action&quot;, &quot;Action&quot;, &quot;…
+## $ director            &lt;chr&gt; &quot;James Cameron&quot;, &quot;James Cameron&quot;, &quot;Colin Trevorrow…
+## $ year                &lt;dbl&gt; 2009, 1997, 2015, 2012, 2008, 1999, 1977, 2015, 20…
+## $ duration            &lt;dbl&gt; 178, 194, 124, 173, 152, 136, 125, 141, 164, 93, 1…
+## $ gross               &lt;dbl&gt; 7.61e+08, 6.59e+08, 6.52e+08, 6.23e+08, 5.33e+08, …
+## $ budget              &lt;dbl&gt; 2.37e+08, 2.00e+08, 1.50e+08, 2.20e+08, 1.85e+08, …
+## $ cast_facebook_likes &lt;dbl&gt; 4834, 45223, 8458, 87697, 57802, 37723, 13485, 920…
+## $ votes               &lt;dbl&gt; 886204, 793059, 418214, 995415, 1676169, 534658, 9…
+## $ reviews             &lt;dbl&gt; 3777, 2843, 1934, 2425, 5312, 3917, 1752, 1752, 35…
+## $ rating              &lt;dbl&gt; 7.9, 7.7, 7.0, 8.1, 9.0, 6.5, 8.7, 7.5, 8.5, 7.2, …</code></pre>
+<div id="are-there-any-missing-values-nas-are-all-entries-distinct-or-are-there-duplicate-entries" class="section level2">
+<h2>Are there any missing values (NAs)? Are all entries distinct or are there duplicate entries?</h2>
+<p>There are no missing values within the dataset. However, not all entries are distinct. Character variables such as title,genre and director have duplicate entries.</p>
+<div id="count-of-movies-by-genre-ranked-in-descending-order" class="section level3">
+<h3>Count of movies by genre, ranked in descending order:</h3>
+<pre class="r"><code>m1 &lt;- movies %&gt;% 
+  group_by(genre) %&gt;%
+    count(sort=TRUE)
+colnames(m1) &lt;- c(&quot;Genre&quot;,&quot;Count of Movies&quot;)
+m1 %&gt;%
+  kbl(caption = &quot;Table 2.1&quot;) %&gt;%
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:unnamed-chunk-1">Table 1: </span>Table 2.1
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Genre
+</th>
+<th style="text-align:right;">
+Count of Movies
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Comedy
+</td>
+<td style="text-align:right;">
+848
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Action
+</td>
+<td style="text-align:right;">
+738
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Drama
+</td>
+<td style="text-align:right;">
+498
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Adventure
+</td>
+<td style="text-align:right;">
+288
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Crime
+</td>
+<td style="text-align:right;">
+202
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Biography
+</td>
+<td style="text-align:right;">
+135
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Horror
+</td>
+<td style="text-align:right;">
+131
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Animation
+</td>
+<td style="text-align:right;">
+35
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fantasy
+</td>
+<td style="text-align:right;">
+28
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Documentary
+</td>
+<td style="text-align:right;">
+25
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mystery
+</td>
+<td style="text-align:right;">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sci-Fi
+</td>
+<td style="text-align:right;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Family
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Musical
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Romance
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Western
+</td>
+<td style="text-align:right;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Thriller
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="average-gross-earning-budget-return-on-budget-by-genre" class="section level3">
+<h3>Average gross earning, budget, return on budget by genre:</h3>
+<pre class="r"><code>movies1 &lt;- movies %&gt;% 
+  mutate(return_on_budget = gross/budget)
+m2 &lt;- movies1 %&gt;% 
+  group_by(genre) %&gt;%
+    summarise(average_gross_earning = mean(gross),
+              average_budget_earning = mean(budget),
+              average_return_budget = mean(return_on_budget)) %&gt;% 
+  arrange(-average_return_budget)
+colnames(m2) &lt;- c(&quot;Genre&quot;,&quot;Average Gross Earning&quot;,&quot;Average Budget Earning&quot;,&quot;Average Return on Budget&quot;)
+m2 %&gt;%
+  kbl(caption = &quot;Table 2.2&quot;) %&gt;%
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:unnamed-chunk-2">Table 2: </span>Table 2.2
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Genre
+</th>
+<th style="text-align:right;">
+Average Gross Earning
+</th>
+<th style="text-align:right;">
+Average Budget Earning
+</th>
+<th style="text-align:right;">
+Average Return on Budget
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Horror
+</td>
+<td style="text-align:right;">
+3.77e+07
+</td>
+<td style="text-align:right;">
+13504916
+</td>
+<td style="text-align:right;">
+88.305
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Biography
+</td>
+<td style="text-align:right;">
+4.52e+07
+</td>
+<td style="text-align:right;">
+28543696
+</td>
+<td style="text-align:right;">
+22.281
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Musical
+</td>
+<td style="text-align:right;">
+9.21e+07
+</td>
+<td style="text-align:right;">
+3189500
+</td>
+<td style="text-align:right;">
+18.818
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Family
+</td>
+<td style="text-align:right;">
+1.49e+08
+</td>
+<td style="text-align:right;">
+14833333
+</td>
+<td style="text-align:right;">
+14.076
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Documentary
+</td>
+<td style="text-align:right;">
+1.74e+07
+</td>
+<td style="text-align:right;">
+5887852
+</td>
+<td style="text-align:right;">
+8.699
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Western
+</td>
+<td style="text-align:right;">
+2.08e+07
+</td>
+<td style="text-align:right;">
+3465000
+</td>
+<td style="text-align:right;">
+7.063
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fantasy
+</td>
+<td style="text-align:right;">
+4.24e+07
+</td>
+<td style="text-align:right;">
+17582143
+</td>
+<td style="text-align:right;">
+6.682
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Animation
+</td>
+<td style="text-align:right;">
+9.84e+07
+</td>
+<td style="text-align:right;">
+61701429
+</td>
+<td style="text-align:right;">
+5.009
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Comedy
+</td>
+<td style="text-align:right;">
+4.26e+07
+</td>
+<td style="text-align:right;">
+24446319
+</td>
+<td style="text-align:right;">
+3.714
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mystery
+</td>
+<td style="text-align:right;">
+6.75e+07
+</td>
+<td style="text-align:right;">
+39218750
+</td>
+<td style="text-align:right;">
+3.269
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Romance
+</td>
+<td style="text-align:right;">
+3.13e+07
+</td>
+<td style="text-align:right;">
+25107500
+</td>
+<td style="text-align:right;">
+3.168
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Drama
+</td>
+<td style="text-align:right;">
+3.75e+07
+</td>
+<td style="text-align:right;">
+26242933
+</td>
+<td style="text-align:right;">
+2.946
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Adventure
+</td>
+<td style="text-align:right;">
+9.58e+07
+</td>
+<td style="text-align:right;">
+66290069
+</td>
+<td style="text-align:right;">
+2.412
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Crime
+</td>
+<td style="text-align:right;">
+3.75e+07
+</td>
+<td style="text-align:right;">
+26596169
+</td>
+<td style="text-align:right;">
+2.175
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Action
+</td>
+<td style="text-align:right;">
+8.66e+07
+</td>
+<td style="text-align:right;">
+71354888
+</td>
+<td style="text-align:right;">
+1.921
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sci-Fi
+</td>
+<td style="text-align:right;">
+2.98e+07
+</td>
+<td style="text-align:right;">
+27607143
+</td>
+<td style="text-align:right;">
+1.580
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Thriller
+</td>
+<td style="text-align:right;">
+2.47e+03
+</td>
+<td style="text-align:right;">
+300000
+</td>
+<td style="text-align:right;">
+0.008
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="top-15-directors-with-the-highest-gross-revenue-in-the-box-office" class="section level3">
+<h3>Top 15 directors with the highest gross revenue in the box office:</h3>
+<pre class="r"><code>m3 &lt;- movies %&gt;% 
+  group_by(director) %&gt;% 
+  summarise(total_gross_earning = sum(gross),
+            average_gross_earning = mean(gross),
+            median_gross_earning = median(gross),
+            sd_gross_earning = sd(gross)) %&gt;%
+  slice_max(order_by = total_gross_earning, n=15)
+colnames(m3) &lt;- c(&quot;Director&quot;,&quot;Total Gross Earning&quot;, &quot;Average Gross Earning&quot;,&quot;Median Gross Earning&quot;,&quot;Standard Deviation Gross Earning&quot;)
+m3 %&gt;%
+  kbl(caption = &quot;Table 2.3&quot;) %&gt;%
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:unnamed-chunk-3">Table 3: </span>Table 2.3
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Director
+</th>
+<th style="text-align:right;">
+Total Gross Earning
+</th>
+<th style="text-align:right;">
+Average Gross Earning
+</th>
+<th style="text-align:right;">
+Median Gross Earning
+</th>
+<th style="text-align:right;">
+Standard Deviation Gross Earning
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Steven Spielberg
+</td>
+<td style="text-align:right;">
+4.01e+09
+</td>
+<td style="text-align:right;">
+1.75e+08
+</td>
+<td style="text-align:right;">
+1.64e+08
+</td>
+<td style="text-align:right;">
+1.01e+08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Michael Bay
+</td>
+<td style="text-align:right;">
+2.23e+09
+</td>
+<td style="text-align:right;">
+1.72e+08
+</td>
+<td style="text-align:right;">
+1.38e+08
+</td>
+<td style="text-align:right;">
+1.27e+08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Tim Burton
+</td>
+<td style="text-align:right;">
+2.07e+09
+</td>
+<td style="text-align:right;">
+1.29e+08
+</td>
+<td style="text-align:right;">
+7.65e+07
+</td>
+<td style="text-align:right;">
+1.09e+08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sam Raimi
+</td>
+<td style="text-align:right;">
+2.01e+09
+</td>
+<td style="text-align:right;">
+2.01e+08
+</td>
+<td style="text-align:right;">
+2.35e+08
+</td>
+<td style="text-align:right;">
+1.62e+08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+James Cameron
+</td>
+<td style="text-align:right;">
+1.91e+09
+</td>
+<td style="text-align:right;">
+3.18e+08
+</td>
+<td style="text-align:right;">
+1.76e+08
+</td>
+<td style="text-align:right;">
+3.09e+08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Christopher Nolan
+</td>
+<td style="text-align:right;">
+1.81e+09
+</td>
+<td style="text-align:right;">
+2.27e+08
+</td>
+<td style="text-align:right;">
+1.97e+08
+</td>
+<td style="text-align:right;">
+1.87e+08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+George Lucas
+</td>
+<td style="text-align:right;">
+1.74e+09
+</td>
+<td style="text-align:right;">
+3.48e+08
+</td>
+<td style="text-align:right;">
+3.80e+08
+</td>
+<td style="text-align:right;">
+1.46e+08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Robert Zemeckis
+</td>
+<td style="text-align:right;">
+1.62e+09
+</td>
+<td style="text-align:right;">
+1.25e+08
+</td>
+<td style="text-align:right;">
+1.01e+08
+</td>
+<td style="text-align:right;">
+9.13e+07
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Clint Eastwood
+</td>
+<td style="text-align:right;">
+1.38e+09
+</td>
+<td style="text-align:right;">
+7.25e+07
+</td>
+<td style="text-align:right;">
+4.67e+07
+</td>
+<td style="text-align:right;">
+7.55e+07
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Francis Lawrence
+</td>
+<td style="text-align:right;">
+1.36e+09
+</td>
+<td style="text-align:right;">
+2.72e+08
+</td>
+<td style="text-align:right;">
+2.82e+08
+</td>
+<td style="text-align:right;">
+1.35e+08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ron Howard
+</td>
+<td style="text-align:right;">
+1.34e+09
+</td>
+<td style="text-align:right;">
+1.11e+08
+</td>
+<td style="text-align:right;">
+1.02e+08
+</td>
+<td style="text-align:right;">
+8.19e+07
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Gore Verbinski
+</td>
+<td style="text-align:right;">
+1.33e+09
+</td>
+<td style="text-align:right;">
+1.90e+08
+</td>
+<td style="text-align:right;">
+1.23e+08
+</td>
+<td style="text-align:right;">
+1.54e+08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Andrew Adamson
+</td>
+<td style="text-align:right;">
+1.14e+09
+</td>
+<td style="text-align:right;">
+2.84e+08
+</td>
+<td style="text-align:right;">
+2.80e+08
+</td>
+<td style="text-align:right;">
+1.21e+08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Shawn Levy
+</td>
+<td style="text-align:right;">
+1.13e+09
+</td>
+<td style="text-align:right;">
+1.03e+08
+</td>
+<td style="text-align:right;">
+8.55e+07
+</td>
+<td style="text-align:right;">
+6.55e+07
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Ridley Scott
+</td>
+<td style="text-align:right;">
+1.13e+09
+</td>
+<td style="text-align:right;">
+8.06e+07
+</td>
+<td style="text-align:right;">
+4.78e+07
+</td>
+<td style="text-align:right;">
+6.88e+07
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="ratings-distributed-by-genre" class="section level3">
+<h3>Ratings distributed by genre:</h3>
+<pre class="r"><code>m4 &lt;- movies %&gt;% 
+  group_by(genre) %&gt;% 
+  summarise(
+            average_rating = mean(rating),
+            median_rating = median(rating),
+            min_rating = min(rating),
+            max_rating = max(rating),
+            sd_rating = sd(rating))
+colnames(m4) &lt;- c(&quot;Genre&quot;,&quot;Average Rating&quot;, &quot;Median Rating&quot;,&quot;Min Rating&quot;,&quot;Max Rating&quot;,&quot;SD Rating&quot;)
+m4 %&gt;%
+  kbl(caption = &quot;Table 2.4&quot;) %&gt;%
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:unnamed-chunk-4">Table 4: </span>Table 2.4
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Genre
+</th>
+<th style="text-align:right;">
+Average Rating
+</th>
+<th style="text-align:right;">
+Median Rating
+</th>
+<th style="text-align:right;">
+Min Rating
+</th>
+<th style="text-align:right;">
+Max Rating
+</th>
+<th style="text-align:right;">
+SD Rating
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Action
+</td>
+<td style="text-align:right;">
+6.23
+</td>
+<td style="text-align:right;">
+6.30
+</td>
+<td style="text-align:right;">
+2.1
+</td>
+<td style="text-align:right;">
+9.0
+</td>
+<td style="text-align:right;">
+1.030
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Adventure
+</td>
+<td style="text-align:right;">
+6.51
+</td>
+<td style="text-align:right;">
+6.60
+</td>
+<td style="text-align:right;">
+2.3
+</td>
+<td style="text-align:right;">
+8.6
+</td>
+<td style="text-align:right;">
+1.094
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Animation
+</td>
+<td style="text-align:right;">
+6.65
+</td>
+<td style="text-align:right;">
+6.90
+</td>
+<td style="text-align:right;">
+4.5
+</td>
+<td style="text-align:right;">
+8.0
+</td>
+<td style="text-align:right;">
+0.968
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Biography
+</td>
+<td style="text-align:right;">
+7.11
+</td>
+<td style="text-align:right;">
+7.20
+</td>
+<td style="text-align:right;">
+4.5
+</td>
+<td style="text-align:right;">
+8.9
+</td>
+<td style="text-align:right;">
+0.760
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Comedy
+</td>
+<td style="text-align:right;">
+6.11
+</td>
+<td style="text-align:right;">
+6.20
+</td>
+<td style="text-align:right;">
+1.9
+</td>
+<td style="text-align:right;">
+8.8
+</td>
+<td style="text-align:right;">
+1.023
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Crime
+</td>
+<td style="text-align:right;">
+6.92
+</td>
+<td style="text-align:right;">
+6.90
+</td>
+<td style="text-align:right;">
+4.8
+</td>
+<td style="text-align:right;">
+9.3
+</td>
+<td style="text-align:right;">
+0.849
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Documentary
+</td>
+<td style="text-align:right;">
+6.66
+</td>
+<td style="text-align:right;">
+7.40
+</td>
+<td style="text-align:right;">
+1.6
+</td>
+<td style="text-align:right;">
+8.5
+</td>
+<td style="text-align:right;">
+1.767
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Drama
+</td>
+<td style="text-align:right;">
+6.73
+</td>
+<td style="text-align:right;">
+6.80
+</td>
+<td style="text-align:right;">
+2.1
+</td>
+<td style="text-align:right;">
+8.8
+</td>
+<td style="text-align:right;">
+0.917
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Family
+</td>
+<td style="text-align:right;">
+6.50
+</td>
+<td style="text-align:right;">
+5.90
+</td>
+<td style="text-align:right;">
+5.7
+</td>
+<td style="text-align:right;">
+7.9
+</td>
+<td style="text-align:right;">
+1.217
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Fantasy
+</td>
+<td style="text-align:right;">
+6.15
+</td>
+<td style="text-align:right;">
+6.45
+</td>
+<td style="text-align:right;">
+4.3
+</td>
+<td style="text-align:right;">
+7.9
+</td>
+<td style="text-align:right;">
+0.959
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Horror
+</td>
+<td style="text-align:right;">
+5.83
+</td>
+<td style="text-align:right;">
+5.90
+</td>
+<td style="text-align:right;">
+3.6
+</td>
+<td style="text-align:right;">
+8.5
+</td>
+<td style="text-align:right;">
+1.014
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Musical
+</td>
+<td style="text-align:right;">
+6.75
+</td>
+<td style="text-align:right;">
+6.75
+</td>
+<td style="text-align:right;">
+6.3
+</td>
+<td style="text-align:right;">
+7.2
+</td>
+<td style="text-align:right;">
+0.636
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Mystery
+</td>
+<td style="text-align:right;">
+6.86
+</td>
+<td style="text-align:right;">
+6.90
+</td>
+<td style="text-align:right;">
+4.6
+</td>
+<td style="text-align:right;">
+8.5
+</td>
+<td style="text-align:right;">
+0.882
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Romance
+</td>
+<td style="text-align:right;">
+6.65
+</td>
+<td style="text-align:right;">
+6.65
+</td>
+<td style="text-align:right;">
+6.2
+</td>
+<td style="text-align:right;">
+7.1
+</td>
+<td style="text-align:right;">
+0.636
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Sci-Fi
+</td>
+<td style="text-align:right;">
+6.66
+</td>
+<td style="text-align:right;">
+6.40
+</td>
+<td style="text-align:right;">
+5.0
+</td>
+<td style="text-align:right;">
+8.2
+</td>
+<td style="text-align:right;">
+1.094
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Thriller
+</td>
+<td style="text-align:right;">
+4.80
+</td>
+<td style="text-align:right;">
+4.80
+</td>
+<td style="text-align:right;">
+4.8
+</td>
+<td style="text-align:right;">
+4.8
+</td>
+<td style="text-align:right;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Western
+</td>
+<td style="text-align:right;">
+5.70
+</td>
+<td style="text-align:right;">
+5.70
+</td>
+<td style="text-align:right;">
+4.1
+</td>
+<td style="text-align:right;">
+7.3
+</td>
+<td style="text-align:right;">
+2.263
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>m4 %&gt;%
+  ggplot(aes(x=Genre, y= `Average Rating`)) +
+  geom_col()+
+  theme_bw()+
+  labs(
+    title = &quot;Ratings distributed by genre&quot;,
+    caption= &quot;Figure 2.1&quot;,
+    x = &quot;Genre&quot;,
+    y = &quot;Average Rating&quot;
+  )+
+  theme(plot.caption = element_text(hjust = 0),
+        axis.text = element_text(size=5))+
+  NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/unnamed-chunk-4-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="relationship-between-gross-earnings-and-cast-popularity" class="section level3">
+<h3>Relationship between gross earnings and cast popularity</h3>
+<pre class="r"><code>ggplot(movies, mapping = aes(
+   y = gross  , x = cast_facebook_likes))+
+   geom_point() + 
+  labs(caption = &quot;Figure 2.2&quot;,
+       y=&quot;Gross&quot;,
+       x=&quot;Cast Facebook Likes &quot;,
+       title = &quot;Relationship b/w Gross Earnings and Cast Popularity&quot;,
+       subtitle = &quot;Scatterplot&quot;)+
+  theme(plot.caption = element_text(hjust = 0))</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/gross_on_fblikes-1.png" width="648" style="display: block; margin: auto;" />
+Cast facebook likes is not a good predictor of movie gross profit. As seen from the graph, movies with various gross profit have a similar number of cast facebook likes and there is no apparent relationship between the two variables.</p>
+</div>
+<div id="relationship-between-gross-earnings-and-budget" class="section level3">
+<h3>Relationship between gross earnings and budget</h3>
+<pre class="r"><code>ggplot(movies, mapping = aes(
+   y = gross  , x = budget))+
+   geom_point() +
+  labs(caption = &quot;Figure 2.3&quot;,
+       y=&quot;Gross&quot;,
+       x=&quot;Budget &quot;,
+       title = &quot;Relationship b/w Gross Earnings and Budget&quot;,
+       subtitle = &quot;Scatterplot&quot;)+
+  theme(plot.caption = element_text(hjust = 0))</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/gross_on_budget-1.png" width="648" style="display: block; margin: auto;" />
+As we can see from the graph, the relationship is much clearer at lower budget where gross is seen to be relatively low as well. However, the relationship seems to be less apparent as budget increases, although the general trend seems to show the gross earnings increasing with increasing budget.</p>
+</div>
+<div id="relationship-between-gross-earnings-and-ratings" class="section level3">
+<h3>Relationship between gross earnings and ratings</h3>
+<pre class="r"><code>ggplot(movies, mapping = aes(
+   y = gross  , x = rating,colour=budget))+
+   geom_point() + 
+   facet_wrap(~genre) +
+  labs(caption = &quot;Figure 2.4&quot;,
+       y=&quot;Gross&quot;,
+       x=&quot;Rating &quot;,
+       title = &quot;Relationship b/w Gross Earnings and Ratings&quot;,
+       subtitle = &quot;Scatterplot&quot;)+
+  theme(plot.caption = element_text(hjust = 0))</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/gross_on_rating-1.png" width="648" style="display: block; margin: auto;" />
+From the data, we can see that for some genres’ the ratings are a good indicator for example action, adventure and comedy have higher gross earnings for movies with higher ratings but this cannot be labelled as the sole indicator. If we map budget as a colour on our plot, we can see that movies with a higher gross behave significantly higher budget combined with higher ratings compared to those with lower ratings and lower gross. However, for most other genres, the rating does not have enough datapoints to give a clear indication of any trends.</p>
+</div>
+</div>
+</div>
+<div id="returns-of-financial-stocks" class="section level1">
+<h1>Returns of financial stocks</h1>
+<p>First,we load the nyse dataset from our files.</p>
+<pre class="r"><code>nyse &lt;- read_csv(here::here(&quot;~/Desktop/RR/my_website&quot;,&quot;nyse.csv&quot;))</code></pre>
+<p>Based on this dataset, we will now create a table and a bar plot that shows the number of companies per sector, in descending order</p>
+<pre class="r"><code>nyse1 &lt;- nyse %&gt;% 
+  group_by(sector) %&gt;% 
+  count(sort=TRUE)
+
+
+colnames(nyse1) &lt;- c(&quot;Sector&quot;,&quot;Number of Companies&quot;)
+nyse1 %&gt;%
+  kbl(caption = &quot;Table 3.1&quot;) %&gt;%
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+(#tab:companies_per_sector)Table 3.1
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Sector
+</th>
+<th style="text-align:right;">
+Number of Companies
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Finance
+</td>
+<td style="text-align:right;">
+97
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Consumer Services
+</td>
+<td style="text-align:right;">
+79
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Public Utilities
+</td>
+<td style="text-align:right;">
+60
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Capital Goods
+</td>
+<td style="text-align:right;">
+45
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Health Care
+</td>
+<td style="text-align:right;">
+45
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Energy
+</td>
+<td style="text-align:right;">
+42
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Technology
+</td>
+<td style="text-align:right;">
+40
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Basic Industries
+</td>
+<td style="text-align:right;">
+39
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Consumer Non-Durables
+</td>
+<td style="text-align:right;">
+31
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Miscellaneous
+</td>
+<td style="text-align:right;">
+12
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Transportation
+</td>
+<td style="text-align:right;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Consumer Durables
+</td>
+<td style="text-align:right;">
+8
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>nyse1 %&gt;% 
+  #select(beer_servings) %&gt;% 
+  slice_max(order_by = `Number of Companies`) %&gt;% 
+  ggplot(aes(reorder(Sector,- `Number of Companies`),`Number of Companies`)) +
+  geom_col()+
+  theme_bw()+
+  labs(
+    title = &quot;Number of Companies by Sector&quot;,
+    caption= &quot;Figure 3.1&quot;,
+    x = &quot;Sector&quot;,
+    y = &quot;Number of Companies&quot;
+  )+
+  theme(plot.caption = element_text(hjust = 0),
+        axis.text = element_text(size=5))+
+  NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/companies_per_sector-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Next, we choose the following six stocks :</p>
+<ul>
+<li><p>Apple (AAPL)</p></li>
+<li><p>JP Morgan (JPM)</p></li>
+<li><p>Domino’s Pizza (DPZ)</p></li>
+<li><p>Tesla (TSLA)</p></li>
+<li><p>Exxon Mobil (XOM)</p></li>
+<li><p>SPDR S&amp;P 500 ETF Trust (SPY)</p></li>
+</ul>
+<pre class="r"><code># Notice the cache=TRUE argument in the chunk options. Because getting data is time consuming, 
+# cache=TRUE means that once it downloads data, the chunk will not run again next time you knit your Rmd
+
+myStocks &lt;- c(&quot;AAPL&quot;,&quot;JPM&quot;,&quot;DPZ&quot;,&quot;TSLA&quot;,&quot;XOM&quot;,&quot;SPY&quot; ) %&gt;%
+  tq_get(get  = &quot;stock.prices&quot;,
+         from = &quot;2011-01-01&quot;,
+         to   = &quot;2021-08-31&quot;) %&gt;%
+  group_by(symbol) 
+
+glimpse(myStocks) # examine the structure of the resulting data frame</code></pre>
+<pre><code>## Rows: 16,098
+## Columns: 8
+## Groups: symbol [6]
+## $ symbol   &lt;chr&gt; &quot;AAPL&quot;, &quot;AAPL&quot;, &quot;AAPL&quot;, &quot;AAPL&quot;, &quot;AAPL&quot;, &quot;AAPL&quot;, &quot;AAPL&quot;, &quot;AAPL…
+## $ date     &lt;date&gt; 2011-01-03, 2011-01-04, 2011-01-05, 2011-01-06, 2011-01-07, …
+## $ open     &lt;dbl&gt; 11.6, 11.9, 11.8, 12.0, 11.9, 12.1, 12.3, 12.3, 12.3, 12.4, 1…
+## $ high     &lt;dbl&gt; 11.8, 11.9, 11.9, 12.0, 12.0, 12.3, 12.3, 12.3, 12.4, 12.4, 1…
+## $ low      &lt;dbl&gt; 11.6, 11.7, 11.8, 11.9, 11.9, 12.0, 12.1, 12.2, 12.3, 12.3, 1…
+## $ close    &lt;dbl&gt; 11.8, 11.8, 11.9, 11.9, 12.0, 12.2, 12.2, 12.3, 12.3, 12.4, 1…
+## $ volume   &lt;dbl&gt; 4.45e+08, 3.09e+08, 2.56e+08, 3.00e+08, 3.12e+08, 4.49e+08, 4…
+## $ adjusted &lt;dbl&gt; 10.1, 10.2, 10.2, 10.2, 10.3, 10.5, 10.5, 10.6, 10.6, 10.7, 1…</code></pre>
+<pre class="r"><code>#calculate daily returns
+myStocks_returns_daily &lt;- myStocks %&gt;%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = &quot;daily&quot;, 
+               type       = &quot;log&quot;,
+               col_rename = &quot;daily_returns&quot;,
+               cols = c(nested.col))  
+
+#calculate monthly  returns
+myStocks_returns_monthly &lt;- myStocks %&gt;%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = &quot;monthly&quot;, 
+               type       = &quot;arithmetic&quot;,
+               col_rename = &quot;monthly_returns&quot;,
+               cols = c(nested.col)) 
+
+#calculate yearly returns
+myStocks_returns_annual &lt;- myStocks %&gt;%
+  group_by(symbol) %&gt;%
+  tq_transmute(select     = adjusted, 
+               mutate_fun = periodReturn, 
+               period     = &quot;yearly&quot;, 
+               type       = &quot;arithmetic&quot;,
+               col_rename = &quot;yearly_returns&quot;,
+               cols = c(nested.col))</code></pre>
+<p>Next, we create a table to summarise monthly returns for each of the stocks and <code>SPY</code>; min, max, median, mean, SD.</p>
+<pre class="r"><code>stocks2 &lt;- myStocks_returns_monthly %&gt;% 
+  group_by(symbol) %&gt;% 
+  summarise(total_monthly_returns = sum(monthly_returns),
+            min_monthly_returns = min(monthly_returns),
+            max_monthly_returns = max(monthly_returns),
+            average_monthly_returns = mean(monthly_returns),
+            median_monthly_returns = median(monthly_returns),
+            sd_monthly_returns = sd(monthly_returns)) 
+  
+colnames(stocks2) &lt;- c(&quot;Stock Ticker Symbol&quot;,&quot;Total Monthly Returns&quot;, &quot;Minimum Monthly Returns&quot;,&quot;Maximum Monthly Returns&quot;,&quot;Average Monthly Returns&quot;,&quot;Median Monthly Returns&quot;,&quot;Standard Deviation Monthly Returns&quot;)
+stocks2 %&gt;%
+  kbl(caption = &quot;Table 3.2&quot;) %&gt;%
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+(#tab:summarise_monthly_returns)Table 3.2
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Stock Ticker Symbol
+</th>
+<th style="text-align:right;">
+Total Monthly Returns
+</th>
+<th style="text-align:right;">
+Minimum Monthly Returns
+</th>
+<th style="text-align:right;">
+Maximum Monthly Returns
+</th>
+<th style="text-align:right;">
+Average Monthly Returns
+</th>
+<th style="text-align:right;">
+Median Monthly Returns
+</th>
+<th style="text-align:right;">
+Standard Deviation Monthly Returns
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+AAPL
+</td>
+<td style="text-align:right;">
+3.134
+</td>
+<td style="text-align:right;">
+-0.181
+</td>
+<td style="text-align:right;">
+0.217
+</td>
+<td style="text-align:right;">
+0.024
+</td>
+<td style="text-align:right;">
+0.026
+</td>
+<td style="text-align:right;">
+0.078
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DPZ
+</td>
+<td style="text-align:right;">
+4.016
+</td>
+<td style="text-align:right;">
+-0.188
+</td>
+<td style="text-align:right;">
+0.342
+</td>
+<td style="text-align:right;">
+0.031
+</td>
+<td style="text-align:right;">
+0.025
+</td>
+<td style="text-align:right;">
+0.075
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+JPM
+</td>
+<td style="text-align:right;">
+1.943
+</td>
+<td style="text-align:right;">
+-0.229
+</td>
+<td style="text-align:right;">
+0.202
+</td>
+<td style="text-align:right;">
+0.015
+</td>
+<td style="text-align:right;">
+0.022
+</td>
+<td style="text-align:right;">
+0.072
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+SPY
+</td>
+<td style="text-align:right;">
+1.576
+</td>
+<td style="text-align:right;">
+-0.125
+</td>
+<td style="text-align:right;">
+0.127
+</td>
+<td style="text-align:right;">
+0.012
+</td>
+<td style="text-align:right;">
+0.017
+</td>
+<td style="text-align:right;">
+0.038
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+TSLA
+</td>
+<td style="text-align:right;">
+6.689
+</td>
+<td style="text-align:right;">
+-0.224
+</td>
+<td style="text-align:right;">
+0.811
+</td>
+<td style="text-align:right;">
+0.052
+</td>
+<td style="text-align:right;">
+0.015
+</td>
+<td style="text-align:right;">
+0.176
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+XOM
+</td>
+<td style="text-align:right;">
+0.396
+</td>
+<td style="text-align:right;">
+-0.262
+</td>
+<td style="text-align:right;">
+0.233
+</td>
+<td style="text-align:right;">
+0.003
+</td>
+<td style="text-align:right;">
+0.002
+</td>
+<td style="text-align:right;">
+0.066
+</td>
+</tr>
+</tbody>
+</table>
+<p>Now we produce a density plot for each of the stocks along with the mean line for each plot as shown below in Figure 3.2:</p>
+<pre class="r"><code>mu &lt;-ddply(myStocks_returns_monthly,&quot;symbol&quot;, summarise, grp.mean=mean(monthly_returns))
+ggplot(myStocks_returns_monthly,aes(x=monthly_returns))+
+  geom_density()+
+  facet_wrap(symbol~.)+geom_vline(data=mu, aes(xintercept= grp.mean),color=&quot;red&quot;,
+             linetype=&quot;dashed&quot;,size=1)+
+  labs(
+    title = &quot;Density Plot for Monthly Returns by Stock&quot;,
+    subtitle = &quot;Mean Line shown&quot;,
+    caption = &quot;Figure 3.2&quot;,
+    x = &quot;Monthly Return&quot;,
+    y = NULL
+  )+
+  theme(plot.caption = element_text(hjust = 0))</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/density_monthly_returns-1.png" width="648" style="display: block; margin: auto;" />
+From the table and the plot, we can deduce that Tesla is the riskiest stock and that SPY, being a fund that tracks a stock market index, is the least risky as it includes a collection of stocks with different risk properties. From the mean lines, we can see that SPY and XOM have the least amount of skewness. Hence, those two stocks have a lower variability in monthly return, meaning that they would be the least risky options.</p>
+<div id="expected-monthly-return-and-standard-deviation-of-stocks" class="section level3">
+<h3>Expected Monthly Return and Standard Deviation of stocks</h3>
+<pre class="r"><code>options(ggrepel.max.overlaps=Inf)
+myStocks_returns_monthly %&gt;%
+  group_by(symbol) %&gt;%
+ summarise(m1 = mean(monthly_returns),m2=sd(monthly_returns)) %&gt;%
+  ggplot(aes(y = m1,x=m2)) +
+  geom_point()+
+  ggrepel::geom_text_repel(aes(label = symbol),
+            #         nudge_x = 1,
+                     na.rm = FALSE)+
+  theme_bw()+
+  labs(
+    title = &quot;Relationship b/w Expected Monthly Return and Risk of Stocks&quot;,
+    #subtitle = &quot;Mean Line shown&quot;,
+    caption = &quot;Figure 3.3&quot;,
+    y = &quot;Expected Monthly Return&quot;,
+    x = &quot;Risk (Standard Deviation)&quot;
+  )+
+  theme(plot.caption = element_text(hjust = 0))</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/risk_return_plot-1.png" width="648" style="display: block; margin: auto;" /></p>
+<blockquote>
+<p>What can you infer from this plot? Are there any stocks which, while being riskier, do not have a higher expected return?</p>
+</blockquote>
+<blockquote>
+<p>From our previous discussion, XOM and SPY are the least risky stocks however they also seem to have the lowest expected monthly returns. Tesla might be the riskiest but it also has the highest expected monthly return. This illustrates the risk return trade-off which states that potential return will rise with increased risk. However, from this graph, we can see that AAPL has higher risk than DPZ yet has lower expected returns.</p>
+</blockquote>
+</div>
+</div>
+<div id="ibm-hr-analytics" class="section level1">
+<h1>(4) IBM HR Analytics</h1>
+<p>For this task, we will analyse a data set on Human Resource Analytics.</p>
+<p>First let us load the data.</p>
+<pre class="r"><code>hr_dataset &lt;- read_csv(here::here(&quot;~/Desktop/RR/my_website&quot;, &quot;datasets_1067_1925_WA_Fn-UseC_-HR-Employee-Attrition.csv&quot;))
+glimpse(hr_dataset)</code></pre>
+<p>We will now clean the data set, as variable names are in capital letters, some variables are not really necessary, and some variables, e.g., <code>education</code> are given as a number rather than a more useful description. The new data is saved in the <code>hr_cleaned</code> dataset.</p>
+<p>Firstly, let us look at how often people leave the company. figure 4.1 below shows that most people stay in the company as illustrated by the “No” column.</p>
+<pre class="r"><code>hr_cleaned %&gt;%
+  group_by(attrition) %&gt;%
+        tally() %&gt;%
+        ggplot(aes(x = attrition, y = n,fill=attrition)) +
+        geom_bar(stat = &quot;identity&quot;) +
+        theme_minimal()+
+        labs(x=&quot;Attrition&quot;, y=&quot;Count of Attrition&quot;,caption = &quot;Figure 4.1&quot;)+
+        ggtitle(&quot;Attrition in the company&quot;)+ 
+  theme(plot.caption = element_text(hjust = 0))+NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/HR1-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Now let us look at how the age distribution within the company as shown below in Figure 4.2. We can see that the age is relatively normally distributed with most employees falling into the 30 - 40 category.</p>
+<pre class="r"><code>hr_cleaned %&gt;%
+  group_by(age) %&gt;%
+  tally() %&gt;%
+  ggplot(aes(x = age, y= n, fill =age))+ geom_histogram(stat = &quot;identity&quot;) +
+        theme_minimal()+
+        labs(x=&quot;Age&quot;, y=&quot;Count of Age&quot;,caption = &quot;Figure 4.2&quot;)+
+        ggtitle(&quot;Age distribution in the company&quot;)+ 
+  theme(plot.caption = element_text(hjust = 0))+NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/unnamed-chunk-7-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>When looking at time spent at the company, Figure 4.3 below is right-skewed showing that most people have not been at the company for more than 10 years.</p>
+<pre class="r"><code>hr_cleaned %&gt;%
+  group_by(years_at_company) %&gt;%
+  tally() %&gt;%
+  ggplot(aes(x = years_at_company, y= n, fill =years_at_company))+ geom_histogram(stat = &quot;identity&quot;) +
+        theme_minimal()+
+        labs(x=&quot;Years at company&quot;, y=&quot;Count of Years in the Company&quot;,caption = &quot;Figure 4.3&quot;)+
+        ggtitle(&quot;Employees years in the company distribution&quot;)+ 
+  theme(plot.caption = element_text(hjust = 0))+NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/unnamed-chunk-8-1.png" width="648" style="display: block; margin: auto;" />
+When it comes to monthly income, figure 4.4 below is also right-skewed clearly indicating that most people make below $7000, with relatively fewer people at the higher income spectrum.</p>
+<pre class="r"><code>ggplot(hr_cleaned, aes(x = monthly_income)) +
+  geom_histogram(fill=&#39;grey&#39;)+
+  theme_minimal()+
+        labs(x=&quot;Monthly income&quot;, y=&quot;Count of monthly income&quot;,caption = &quot;Figure 4.4&quot;)+
+        ggtitle(&quot;Monthly income distribution in the company&quot;)+
+  theme(plot.caption = element_text(hjust = 0))+ NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/unnamed-chunk-9-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Again, when looking at figure 4.5, it is clearly right-skewed indicating that most people have been recently promoted.</p>
+<pre class="r"><code>hr_cleaned %&gt;%
+  group_by(years_since_last_promotion) %&gt;%
+  tally() %&gt;%
+  ggplot(aes(x = years_since_last_promotion, y= n, fill =years_since_last_promotion))+ geom_histogram(stat = &quot;identity&quot;) +
+        theme_minimal()+
+        labs(x=&quot;Years since last promotion&quot;, y=&quot;Count of years since last promotion&quot;,caption = &quot;Figure 4.5&quot;)+
+        ggtitle(&quot;Years since last promotion distribution in the company&quot;)+
+  theme(plot.caption = element_text(hjust = 0))+ NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/unnamed-chunk-10-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Next, we will look at how job satisfaction and work life balance are distributed. From table 4.1, we can see that most people are relatively satisfied with their jobs, with ~60% reporting high or very high job satisfaction. Similarly, from table 4.2, we can see that most employees are not dissatisfied with their work life balance.</p>
+<pre class="r"><code>hr1 &lt;- hr_cleaned %&gt;% 
+  select(job_satisfaction) %&gt;% 
+  group_by(job_satisfaction) %&gt;%
+    count(sort=TRUE)
+hr1$Percent &lt;- hr1$n/sum(hr1$n) * 100
+colnames(hr1) &lt;- c(&quot;Job Satisfaction&quot;,&quot;Count&quot;,&quot;Percentage of Count&quot;)
+
+hr1[-2] %&gt;%
+  kbl(caption = &quot;Table 4.1&quot;) %&gt;%
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:HR3">Table 5: </span>Table 4.1
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Job Satisfaction
+</th>
+<th style="text-align:right;">
+Percentage of Count
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Very High
+</td>
+<td style="text-align:right;">
+31.2
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+High
+</td>
+<td style="text-align:right;">
+30.1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Low
+</td>
+<td style="text-align:right;">
+19.7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Medium
+</td>
+<td style="text-align:right;">
+19.0
+</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>hr2 &lt;- hr_cleaned %&gt;% 
+  select(work_life_balance) %&gt;% 
+  group_by(work_life_balance) %&gt;%
+  count(sort=TRUE) 
+hr2$Percent &lt;- hr2$n/sum(hr2$n) * 100
+colnames(hr2) &lt;- c(&quot;Work Life Balances&quot;,&quot;Count&quot;,&quot;Percentage of Count&quot;)
+hr2[-2] %&gt;%
+  kbl(caption = &quot;Table 4.2&quot;) %&gt;%
+  kable_classic(full_width = F, html_font = &quot;Cambria&quot;)</code></pre>
+<table class=" lightable-classic" style="font-family: Cambria; width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>
+<span id="tab:HR3">Table 5: </span>Table 4.2
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+Work Life Balances
+</th>
+<th style="text-align:right;">
+Percentage of Count
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+Better
+</td>
+<td style="text-align:right;">
+60.75
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Good
+</td>
+<td style="text-align:right;">
+23.40
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Best
+</td>
+<td style="text-align:right;">
+10.41
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Bad
+</td>
+<td style="text-align:right;">
+5.44
+</td>
+</tr>
+</tbody>
+</table>
+<p>As figure 4.6 shows, generally, with higher education received, people tend to have higher monthly income. Specifically, people who received below college education occupy the most in the low income category (0-5000). People who own doctor education occupy the most in higher income category (15000-20000).
+As figure 4.7 shows, these two lines (female/male) overlap a lot, but in specific, there are more female than male in the lower income category(0-5000), and more male than female in high income category (17500-20000)</p>
+<pre class="r"><code> hr_cleaned %&gt;%
+  group_by(education) %&gt;%
+  ggplot(aes(x=monthly_income,color=education))+
+  #facet_wrap(education~.)+
+  geom_density(alpha = 0)+
+        theme_minimal()+
+        labs(x=&quot;Monthly Income&quot;, y=&quot;Density&quot;, caption = &quot;Figure 4.6&quot;)+
+        ggtitle(&quot;Relationship between monthly income and education&quot;)+
+  theme(plot.caption = element_text(hjust = 0))+ NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/unnamed-chunk-11-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>hr_cleaned %&gt;%
+  group_by(gender) %&gt;%
+  ggplot(aes(x=monthly_income,color=gender))+
+  #facet_wrap(education~.)+
+  geom_density(alpha = 0)+
+        theme_minimal()+
+        labs(x=&quot;Monthly Income&quot;, y=&quot;Density&quot;,caption = &quot;Figure 4.7&quot;)+
+        ggtitle(&quot;Relationship between monthly income and gender&quot;)+
+  theme(plot.caption = element_text(hjust = 0))+ NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/unnamed-chunk-11-2.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Figure 4.8 below shows that the highest-paying jobs are managers and research directors, with a few outliers. The lowest paying jobs, such as sales representative or laboratory technician are not very spread out whereas jobs in the middle income range have a bigger variability in monthly income.</p>
+<pre class="r"><code>hr_cleaned %&gt;% 
+ggplot(aes(x = reorder(job_role,-monthly_income),y=monthly_income,fill=job_role)) + 
+  geom_boxplot() +
+  theme_bw() +
+    labs(
+     title = &quot;Income Vs Job Role&quot;,
+     subtitle = &quot;Boxplot&quot;,
+     x = &quot;Job Role&quot;,
+     y = &quot;Monthly Income&quot;,caption = &quot;Figure 4.8&quot;
+    )+
+  theme(plot.caption = element_text(hjust = 0),
+        axis.text = element_text(size=5))+
+NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/HR5-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>In order to compare income by education level, we look at the median values as the mean is influenced by extreme values and is not an accurate enough representation of the salary level that could be expected. Figure 4.10 showcases that people with a doctorate have the highest median income, whilst people with a below college education have the lowest.</p>
+<pre class="r"><code>hr_cleaned %&gt;%
+  group_by(education) %&gt;% 
+  summarise(mean=mean(monthly_income)) %&gt;% 
+  ggplot(aes(x = education, y=mean)) +
+  geom_col(fill=&#39;blue&#39;) +
+  labs(x=&quot;Education level&quot;, y=&quot;Income&quot;,caption = &quot;Figure 4.9&quot;)+
+  ggtitle(&quot;Mean income by education level&quot;)+
+  theme(plot.caption = element_text(hjust = 0))+ NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/unnamed-chunk-12-1.png" width="648" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>hr_cleaned %&gt;%
+  group_by(education) %&gt;% 
+  summarise(median=median(monthly_income)) %&gt;% 
+  ggplot(aes(x = education, y=median)) +
+  geom_col(fill=&#39;red&#39;) +
+  labs(x=&quot;Education level&quot;, y=&quot;Income&quot;,caption = &quot;Figure 4.10&quot;)+
+  ggtitle(&quot;Median income by education level&quot;)+
+  theme(plot.caption = element_text(hjust = 0))+ NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/unnamed-chunk-12-2.png" width="648" style="display: block; margin: auto;" /></p>
+<p>As figure 4.11 below shows, although data is limited in Doctor category, all these five graphs have right skewed distribution. This means that, in all education levels, the higher the monthly income, the smaller the number of people.</p>
+<pre class="r"><code>hr_cleaned %&gt;%
+  mutate(
+    education = fct_reorder(education, monthly_income, mean)
+  ) %&gt;%
+  group_by(education) %&gt;% 
+  ggplot(aes(x = monthly_income)) +
+  geom_histogram() +
+  facet_wrap(education~.) +
+  theme_economist() +
+     theme(legend.position = &quot;none&quot;,
+           axis.title.x = element_text()) + 
+  labs(x=&quot;Monthly Income&quot;, y=&quot;Density&quot;,caption = &quot;Figure 4.11&quot;)+
+  ggtitle(&quot;Distribution of income by education level&quot;)+
+  theme(plot.caption = element_text(hjust = 0))+
+  NULL</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/HR7-1.png" width="648" style="display: block; margin: auto;" /></p>
+<p>Figure 4.12 below shows the relationship between income and age by job category. For example, for sales associates, the salary is higher at a younger age presumably due to the nature of the job. While manager’s salary seems to increase to an extent with age.</p>
+<pre class="r"><code>ggplot(hr_cleaned, mapping = aes(
+   y = monthly_income  , x = age))+
+   geom_col() + 
+   facet_wrap(~job_role) +
+   labs(caption = &quot;Figure 4.12&quot;,
+       y=&quot;Monthly Income&quot;,
+       x=&quot;Age &quot;,
+       title = &quot;Income vs Age&quot;
+      )+
+  theme(plot.caption = element_text(hjust = 0))</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/unnamed-chunk-13-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>
+<div id="challenge-replicating-a-chart" class="section level1">
+<h1>Challenge: Replicating a chart</h1>
+<p>The purpose of this exercise is to reproduce a plot which can be found below.</p>
+<pre class="r"><code># Download CDC vaccination by county
+cdc_url &lt;- &quot;https://data.cdc.gov/api/views/8xkx-amqh/rows.csv?accessType=DOWNLOAD&quot;
+vaccinations &lt;- vroom(cdc_url) %&gt;%
+  janitor::clean_names() %&gt;%
+  filter(fips != &quot;UNK&quot;) # remove counties that have an unknown (UNK) FIPS code
+ 
+# Download County Presidential Election Returns
+# https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/VOQCHQ
+election2020_results &lt;- vroom(here::here(&quot;~/Desktop/RR/my_website&quot;, &quot;countypres_2000-2020.csv&quot;)) %&gt;%
+  janitor::clean_names() %&gt;%
+  
+  # just keep the results for the 2020 election
+  filter(year == &quot;2020&quot;) %&gt;%
+  
+  # change original name county_fips to fips, to be consistent with the other two files
+  rename (fips = county_fips)
+ 
+# Download county population data
+population_url &lt;- &quot;https://www.ers.usda.gov/webdocs/DataFiles/48747/PopulationEstimates.csv?v=2232&quot;
+population &lt;- vroom(population_url) %&gt;%
+  janitor::clean_names() %&gt;%
+  
+  # select the latest data, namely 2019
+  select(fips = fip_stxt, pop_estimate_2019) %&gt;%
+  
+  # pad FIPS codes with leading zeros, so they are always made up of 5 characters
+  mutate(fips = stringi::stri_pad_left(fips, width=5, pad = &quot;0&quot;))
+
+#create trump table
+trump_vote &lt;- election2020_results %&gt;%
+  group_by(fips) %&gt;% 
+  filter(candidate == &quot;DONALD J TRUMP&quot;) %&gt;% 
+  summarise(votes = sum(candidatevotes)*100)
+
+# create vaccination table
+vaccination_number &lt;- vaccinations %&gt;% 
+  filter(date == &#39;09/02/2021&#39;) %&gt;% 
+  group_by(fips) %&gt;%  
+  select(fips, series_complete_yes) %&gt;% 
+  summarise(series_complete_yes = sum(series_complete_yes)*100)
+
+# create full table
+full_table &lt;- left_join(vaccination_number, trump_vote, by = &#39;fips&#39;) %&gt;% 
+  left_join(population, by = &#39;fips&#39;) %&gt;% 
+  mutate(vaccination_rate = series_complete_yes/pop_estimate_2019, trump_vote_rate = votes/pop_estimate_2019) %&gt;% 
+  filter(vaccination_rate &lt;= 100, trump_vote_rate&lt;= 100)
+
+# reproduce graph
+full_table %&gt;% ggplot(aes(x = trump_vote_rate, y = vaccination_rate, size = pop_estimate_2019)) + 
+  geom_point(alpha = 0.3) +
+  scale_y_continuous(labels = scales::percent_format(scale = 1)) +
+  scale_x_continuous(labels = scales::percent_format(scale = 1)) +
+  theme_bw() +
+    labs(
+     title = &quot;COVID-19 VACCINATION LEVELS OUT OF TOTAL POPULATION BY COUNTY&quot;,
+     x = &quot;2020 Trump Vote %&quot;,
+     y = &quot;% of Total Population Vaccination&quot;
+    )+
+  theme(plot.caption = element_text(hjust = 0))</code></pre>
+<p><img src="/blogs/hwone_files/figure-html/unnamed-chunk-14-1.png" width="648" style="display: block; margin: auto;" /></p>
+</div>

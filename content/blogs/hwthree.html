@@ -16,6 +16,19 @@ title: group project
 <link href="/rmarkdown-libs/lightable/lightable.css" rel="stylesheet" />
 
 
+<pre class="r"><code>library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
+library(mosaic)
+library(ggthemes)
+library(GGally)
+library(readxl)
+library(here)
+library(skimr)
+library(janitor)
+library(broom)
+library(tidyquant)
+library(infer)
+library(openintro)
+library(kableExtra)</code></pre>
 <div id="youth-risk-behavior-surveillance" class="section level1">
 <h1>Youth Risk Behavior Surveillance</h1>
 <p>Every two years, the Centers for Disease Control and Prevention conduct the <a href="https://www.cdc.gov/healthyyouth/data/yrbs/index.htm">Youth Risk Behavior Surveillance System (YRBSS)</a> survey, where it takes data from high schoolers (9th through 12th grade), to analyze health patterns. You will work with a selected group of variables from a random sample of observations during one of the years the YRBSS was conducted.</p>
@@ -978,7 +991,9 @@ no
 ## sample estimates:
 ##  mean in group no mean in group yes 
 ##              66.7              68.4</code></pre>
+<blockquote>
 <p>The null hypothesis is that there is no difference for those who exercise at least times a week and those who don’t. The alternative hypothesis is that we can observe a difference for those who exercise at least times a week and those who don’t.</p>
+</blockquote>
 </div>
 <div id="hypothesis-test-with-infer" class="section level2">
 <h2>Hypothesis test with <code>infer</code></h2>
@@ -1009,7 +1024,8 @@ no
 <p><img src="/blogs/hwthree_files/figure-html/unnamed-chunk-3-1.png" width="648" style="display: block; margin: auto;" /></p>
 <p>Now that the test is initialized and the null distribution formed, we can visualise to see how many of these null permutations have a difference of at least <code>obs_stat</code> of 1.77?</p>
 <p>We can also calculate the p-value for your hypothesis test using the function <code>infer::get_p_value()</code>.</p>
-<pre class="r"><code>null_dist %&gt;% visualize() +
+<pre class="r"><code>null_dist %&gt;% 
+  visualize() +
   shade_p_value(obs_stat = obs_diff, direction = &quot;two-sided&quot;)</code></pre>
 <p><img src="/blogs/hwthree_files/figure-html/unnamed-chunk-4-1.png" width="648" style="display: block; margin: auto;" /></p>
 <pre class="r"><code>null_dist %&gt;%
@@ -1048,10 +1064,14 @@ glimpse(movies)</code></pre>
 ## $ votes               &lt;dbl&gt; 886204, 793059, 418214, 995415, 1676169, 534658, 9…
 ## $ reviews             &lt;dbl&gt; 3777, 2843, 1934, 2425, 5312, 3917, 1752, 1752, 35…
 ## $ rating              &lt;dbl&gt; 7.9, 7.7, 7.0, 8.1, 9.0, 6.5, 8.7, 7.5, 8.5, 7.2, …</code></pre>
-<pre class="r"><code>grouped_table &lt;- movies %&gt;% filter(director %in% c(&quot;Steven Spielberg&quot;, &quot;Tim Burton&quot;)) %&gt;% group_by(director)
-clean_table &lt;- grouped_table  %&gt;% summarise(mean = mean(rating), sd = sd(rating), sample_size = n(), se = sd/sqrt(sample_size), t_critical = qt(0.975, sample_size -1), lower = mean - t_critical * se, upper = mean + t_critical * se)
+<pre class="r"><code>grouped_table &lt;- movies %&gt;% 
+  filter(director %in% c(&quot;Steven Spielberg&quot;, &quot;Tim Burton&quot;)) %&gt;% 
+  group_by(director)
+clean_table &lt;- grouped_table  %&gt;% 
+  summarise(mean = mean(rating), sd = sd(rating), sample_size = n(), se = sd/sqrt(sample_size), t_critical = qt(0.975, sample_size -1), lower = mean - t_critical * se, upper = mean + t_critical * se)
 
-clean_table %&gt;% ggplot() + 
+clean_table %&gt;% 
+  ggplot() + 
   geom_errorbarh(aes(y = director, xmax = upper, xmin = lower, colour = director), width = 0.1, size = 2) +
   geom_point(aes(x = mean, y = director, colour = director), size = 5) + 
   geom_text(x = clean_table$upper, y = clean_table$director, label = round(clean_table$upper,2), vjust = -2, size = 4) +
@@ -1081,11 +1101,18 @@ t.test(rating ~ director ,data = grouped_table)</code></pre>
 ##                           7.57                           6.93</code></pre>
 <pre class="r"><code>## infer 
 set.seed(1234)
-infer_table &lt;- grouped_table %&gt;% specify(rating ~ director) %&gt;% hypothesise(null = &quot;independence&quot;) %&gt;% generate(reps = 1000, type = &quot;permute&quot;) %&gt;% calculate(stat = &quot;diff in means&quot;) 
+infer_table &lt;- grouped_table %&gt;% 
+  specify(rating ~ director) %&gt;% 
+  hypothesise(null = &quot;independence&quot;) %&gt;% 
+  generate(reps = 1000, type = &quot;permute&quot;) %&gt;% 
+  calculate(stat = &quot;diff in means&quot;) 
 
-observed_stat &lt;- grouped_table %&gt;% specify(rating ~ director) %&gt;% calculate(stat = &quot;diff in means&quot;)
+observed_stat &lt;- grouped_table %&gt;% 
+  specify(rating ~ director) %&gt;% 
+  calculate(stat = &quot;diff in means&quot;)
 
-infer_table %&gt;% get_pvalue(obs_stat = observed_stat, direction = &quot;both&quot;)</code></pre>
+infer_table %&gt;% 
+  get_pvalue(obs_stat = observed_stat, direction = &quot;both&quot;)</code></pre>
 <pre><code>## # A tibble: 1 × 1
 ##   p_value
 ##     &lt;dbl&gt;
@@ -1205,7 +1232,25 @@ favstats (experience ~ gender, data=omega)</code></pre>
 <div id="challenge-1-brexit-plot" class="section level1">
 <h1>Challenge 1: Brexit plot</h1>
 <p>Using your data manipulation and visualisation skills, please use the Brexit results dataframe (the same dataset you used in the pre-programme assignement) and produce the following plot. Use the correct colour for each party; google “UK Political Party Web Colours” and find the appropriate hex code for colours, not the default colours that R gives you.</p>
-<p><img src="/Users/xxdehh/Desktop/RR/my_website/images/brexit.png" width="100%" style="display: block; margin: auto;" /><img src="/blogs/hwthree_files/figure-html/brexit_challenge-2.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>brexit_results&lt;- read_csv(&quot;~/Desktop/RR/my_website/brexit_results.csv&quot;)
+brexit_results %&gt;%
+  ggplot(aes())+
+  geom_point(aes(x=con_2015,y=leave_share, color=&quot;Conservative&quot;),alpha=0.5,size=0.8)+
+  geom_point(aes(x=lab_2015,y=leave_share,color=&quot;Labour&quot;),alpha=0.5,size=0.8)+
+  geom_point(aes(x=ld_2015, y=leave_share,color=&quot;Lib Dems&quot;),alpha=0.5,size=0.8)+
+  geom_point(aes(x=ukip_2015, y=leave_share,color=&quot;UKIP&quot;),alpha=0.5,size=0.8)+
+  geom_smooth(aes(x=con_2015,y=leave_share),method=lm, color=&quot;#0087dc&quot;)+
+  geom_smooth(aes(x=lab_2015,y=leave_share),method=lm,color=&quot;#d50000&quot;)+
+  geom_smooth(aes(x=ld_2015,y=leave_share),method=lm, color=&quot;#FDBB30&quot;)+
+  geom_smooth(aes(x=ukip_2015,y=leave_share),method=lm, color=&quot;#EFE600&quot;)+
+  
+  scale_color_manual(name=&quot;&quot;,
+                     values = c(&quot;Conservative&quot;=&quot;#0087dc&quot;,
+                                &quot;Labour&quot;=&quot;#d50000&quot;,
+                                &quot;Lib Dems&quot;=&quot;#FDBB30&quot;,
+                                &quot;UKIP&quot;=&quot;#EFE600&quot;))+
+  labs(title = &quot;How political affiliation translated to Brexit Voting&quot;, y=&quot;Leave % in the 2016 Brexit referendum&quot;, x=&quot;Party % in the UK 2015 general election&quot;)</code></pre>
+<p><img src="/blogs/hwthree_files/figure-html/brexit_challenge-1.png" width="100%" style="display: block; margin: auto;" /></p>
 </div>
 <div id="challenge-2gdp-components-over-time-and-among-countries" class="section level1">
 <h1>Challenge 2:GDP components over time and among countries</h1>
@@ -1235,13 +1280,97 @@ glimpse(tidy_GDP_data)</code></pre>
 <pre class="r"><code># Let us compare GDP components for these 3 countries
 country_list &lt;- c(&quot;United States&quot;,&quot;India&quot;, &quot;Germany&quot;)</code></pre>
 <p>First, can you produce this plot?</p>
-<p><img src="/Users/xxdehh/Desktop/RR/my_website/images/gdp1.png" width="100%" style="display: block; margin: auto;" /><img src="/blogs/hwthree_files/figure-html/gdp1-2.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># clean data
+clean_table &lt;- tidy_GDP_data %&gt;% filter(Country %in% c(&quot;United States&quot;,&quot;India&quot;, &quot;Germany&quot;), IndicatorName %in% c(&quot;Gross capital formation&quot;, &quot;Exports&quot;, &quot;Government expenditure&quot;, &quot;Household expenditure&quot;,&quot;Imports&quot;, &quot;&quot;), year                                  &gt;=1970) %&gt;% mutate(year = as.numeric(year)) 
+
+# plot
+clean_table %&gt;% ggplot(aes(x = year, y = value, colour = IndicatorName, group = IndicatorName)) +
+  geom_smooth(aes(x = year, y = value), se = FALSE, span = 0.2) +
+  facet_wrap(~ Country) +
+  labs(
+    title = &quot;GDP Components over time&quot;,
+    subtitle = &quot;In constant 2010 USD&quot;,
+    x = NULL,
+    y = &quot;Billion US$&quot;
+  ) +
+  theme_bw() +
+  NULL</code></pre>
+<p><img src="/blogs/hwthree_files/figure-html/gdp1-1.png" width="100%" style="display: block; margin: auto;" /></p>
 <p>Secondly, recall that GDP is the sum of Household Expenditure (Consumption <em>C</em>), Gross Capital Formation (business investment <em>I</em>), Government Expenditure (G) and Net Exports (exports - imports). Even though there is an indicator <code>Gross Domestic Product (GDP)</code> in your dataframe, I would like you to calculate it given its components discussed above.</p>
 <blockquote>
 <p>What is the % difference between what you calculated as GDP and the GDP figure included in the dataframe?</p>
 </blockquote>
+<blockquote>
 <p>As calculated below, For Germay, the % difference range from 1.0% to 1.04%. THe India range from 1.08% to 0.0%. United States range from 1.0% to 1.04%.</p>
-<p><img src="/Users/xxdehh/Desktop/RR/my_website/images/gdp2.png" width="100%" style="display: block; margin: auto;" /><img src="/blogs/hwthree_files/figure-html/gdp2-2.png" width="100%" style="display: block; margin: auto;" /><img src="/blogs/hwthree_files/figure-html/gdp2-3.png" width="100%" style="display: block; margin: auto;" /></p>
+</blockquote>
+<pre class="r"><code># calculate GDP
+export &lt;- clean_table %&gt;% 
+  filter(IndicatorName == &quot;Exports&quot;) %&gt;% 
+  rename(&quot;Exports&quot; = &quot;IndicatorName&quot;)
+import &lt;- clean_table %&gt;% 
+  filter(IndicatorName == &quot;Imports&quot;) %&gt;% 
+  rename(&quot;Imports&quot; = &quot;IndicatorName&quot;)
+household_expenditure &lt;- clean_table %&gt;% 
+  filter(IndicatorName == &quot;Household expenditure&quot;) %&gt;% 
+  rename(&quot;Household expenditure&quot; = &quot;value&quot;)
+Government_expenditure &lt;- clean_table %&gt;% 
+  filter(IndicatorName == &quot;Government expenditure&quot;) %&gt;% 
+  rename(&quot;Government expenditure&quot; = &quot;value&quot;)
+Gross_capital_formation &lt;- clean_table %&gt;% 
+  filter(IndicatorName == &quot;Gross capital formation&quot;) %&gt;% 
+  rename(&quot;Gross capital formation&quot; = &quot;value&quot;)
+net_exports &lt;- left_join(export, import, by = c(&quot;year&quot;, &quot;Country&quot;)) %&gt;% 
+  mutate(net_exports = value.x - value.y) %&gt;% 
+  select(year, Country, net_exports)
+
+merge1 &lt;- left_join(household_expenditure, Government_expenditure, by = c(&quot;Country&quot;, &quot;year&quot;))
+merge2 &lt;- left_join(merge1, Gross_capital_formation, by = c(&quot;Country&quot;, &quot;year&quot;)) 
+merge3 &lt;- left_join(merge2, net_exports, by = c(&quot;Country&quot;, &quot;year&quot;))
+
+GDP_table &lt;- merge3 %&gt;% 
+  mutate(GDP = `Household expenditure`+ `Government expenditure`+ `Gross capital formation`+ net_exports) %&gt;% 
+  select(year, Country, `Household expenditure`, `Government expenditure`, `Gross capital formation`, net_exports, GDP) %&gt;%
+  pivot_longer(cols = 3:6, values_to = &quot;values&quot;, names_to = &quot;Indicator&quot;)
+
+origion_GDP &lt;- tidy_GDP_data %&gt;% 
+  filter(IndicatorName == &quot;Gross Domestic Product (GDP)&quot;) %&gt;% 
+  mutate(year = as.numeric(year)) %&gt;% group_by(year, Country) %&gt;% 
+  summarise(Country = Country, year = year, origin = mean(value))
+
+GDP &lt;- GDP_table %&gt;% 
+  select(GDP, year, Country)
+
+compare_GDP &lt;- left_join(GDP, origion_GDP, by = c(&quot;Country&quot; = &quot;Country&quot;, &quot;year&quot; = &quot;year&quot;)) %&gt;% 
+  group_by(year, Country) %&gt;% 
+  summarise(percent_diff = GDP/origin)
+
+proportion_table &lt;- GDP_table %&gt;% 
+  mutate(proportion = values/GDP)
+
+# plot GDP change
+compare_GDP %&gt;% 
+  ggplot(aes(x = year, y = percent_diff)) +
+  geom_line(aes(x = year, y = percent_diff)) +
+  facet_wrap(~Country) +
+  labs(
+    title = &quot; % difference between what you calculated as GDP and the GDP figure included in the dataframe&quot;
+  ) +
+  theme_bw()+
+  NULL</code></pre>
+<p><img src="/blogs/hwthree_files/figure-html/gdp2-1.png" width="100%" style="display: block; margin: auto;" /></p>
+<pre class="r"><code># plot proportion 
+proportion_table %&gt;% 
+  ggplot(aes(x = year, y = proportion, colour = Indicator, group = Indicator)) +
+  geom_smooth(aes(x = year, y = proportion), se = FALSE, span = 0.1) +
+  facet_wrap(~ Country) +
+  labs(
+    title = &quot;GDP and Its breakdown at constant 2010 prices in US Dollars&quot;,
+    x = NULL,
+    y = &quot;proportion&quot;
+  ) +
+  theme_bw() +
+  NULL </code></pre>
+<p><img src="/blogs/hwthree_files/figure-html/gdp2-2.png" width="100%" style="display: block; margin: auto;" /></p>
 <blockquote>
 <p>What is this last chart telling you? Can you explain in a couple of paragraphs the different dynamic among these three countries?</p>
 </blockquote>

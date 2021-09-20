@@ -29,7 +29,7 @@ knitr::opts_chunk$set(
 ```
 
 
-```{r load-libraries, echo=FALSE}
+```{r load-libraries}
 library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
 library(mosaic)
 library(ggthemes)
@@ -195,7 +195,8 @@ Write the null and alternative hypotheses for testing whether mean weights are d
 
 t.test(weight ~ physical_3plus, data = yrbss2)
 ```
-The null hypothesis is that there is no difference for those who exercise at least times a week and those who don’t. The alternative hypothesis is that we can observe a difference for those who exercise at least times a week and those who don’t.
+
+>The null hypothesis is that there is no difference for those who exercise at least times a week and those who don’t. The alternative hypothesis is that we can observe a difference for those who exercise at least times a week and those who don’t.
 
 
 ## Hypothesis test with `infer`
@@ -250,7 +251,8 @@ We can also calculate the p-value for your hypothesis test using the function `i
 
 ```{r}
 
-null_dist %>% visualize() +
+null_dist %>% 
+  visualize() +
   shade_p_value(obs_stat = obs_diff, direction = "two-sided")
 
 null_dist %>%
@@ -287,10 +289,14 @@ glimpse(movies)
 
 
 ```{r}
-grouped_table <- movies %>% filter(director %in% c("Steven Spielberg", "Tim Burton")) %>% group_by(director)
-clean_table <- grouped_table  %>% summarise(mean = mean(rating), sd = sd(rating), sample_size = n(), se = sd/sqrt(sample_size), t_critical = qt(0.975, sample_size -1), lower = mean - t_critical * se, upper = mean + t_critical * se)
+grouped_table <- movies %>% 
+  filter(director %in% c("Steven Spielberg", "Tim Burton")) %>% 
+  group_by(director)
+clean_table <- grouped_table  %>% 
+  summarise(mean = mean(rating), sd = sd(rating), sample_size = n(), se = sd/sqrt(sample_size), t_critical = qt(0.975, sample_size -1), lower = mean - t_critical * se, upper = mean + t_critical * se)
 
-clean_table %>% ggplot() + 
+clean_table %>% 
+  ggplot() + 
   geom_errorbarh(aes(y = director, xmax = upper, xmin = lower, colour = director), width = 0.1, size = 2) +
   geom_point(aes(x = mean, y = director, colour = director), size = 5) + 
   geom_text(x = clean_table$upper, y = clean_table$director, label = round(clean_table$upper,2), vjust = -2, size = 4) +
@@ -312,11 +318,18 @@ t.test(rating ~ director ,data = grouped_table)
 
 ## infer 
 set.seed(1234)
-infer_table <- grouped_table %>% specify(rating ~ director) %>% hypothesise(null = "independence") %>% generate(reps = 1000, type = "permute") %>% calculate(stat = "diff in means") 
+infer_table <- grouped_table %>% 
+  specify(rating ~ director) %>% 
+  hypothesise(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "diff in means") 
 
-observed_stat <- grouped_table %>% specify(rating ~ director) %>% calculate(stat = "diff in means")
+observed_stat <- grouped_table %>% 
+  specify(rating ~ director) %>% 
+  calculate(stat = "diff in means")
 
-infer_table %>% get_pvalue(obs_stat = observed_stat, direction = "both")
+infer_table %>% 
+  get_pvalue(obs_stat = observed_stat, direction = "both")
 
 ```
 
@@ -442,8 +455,7 @@ omega %>%
 Using your data manipulation and visualisation skills, please use the Brexit results dataframe (the same dataset you used in the pre-programme assignement) and produce the following plot. Use the correct colour for each party; google "UK Political Party Web Colours" and find the appropriate hex code for colours, not the default colours that R gives you.
 
 
-```{r brexit_challenge, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "brexit.png"), error = FALSE)
+```{r brexit_challenge, out.width="100%"}
 
 brexit_results<- read_csv("~/Desktop/RR/my_website/brexit_results.csv")
 brexit_results %>%
@@ -506,8 +518,7 @@ country_list <- c("United States","India", "Germany")
 First, can you produce this plot?
 
 
-```{r gdp1, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "gdp1.png"), error = FALSE)
+```{r gdp1, out.width="100%"}
 # clean data
 clean_table <- tidy_GDP_data %>% filter(Country %in% c("United States","India", "Germany"), IndicatorName %in% c("Gross capital formation", "Exports", "Government expenditure", "Household expenditure","Imports", ""), year                                  >=1970) %>% mutate(year = as.numeric(year)) 
 
@@ -530,12 +541,10 @@ Secondly, recall that GDP is the sum of Household Expenditure (Consumption *C*),
 
 > What is the % difference between what you calculated as GDP and the GDP figure included in the dataframe?
 
-As calculated below, For Germay, the % difference range from 1.0% to 1.04%. THe India range from 1.08% to 0.0%. United States range from 1.0% to 1.04%.
+>As calculated below, For Germay, the % difference range from 1.0% to 1.04%. THe India range from 1.08% to 0.0%. United States range from 1.0% to 1.04%.
 
 
-```{r gdp2, echo=FALSE, out.width="100%"}
-knitr::include_graphics(here::here("images", "gdp2.png"), error = FALSE)
-
+```{r gdp2, out.width="100%"}
 # calculate GDP
 export <- clean_table %>% 
   filter(IndicatorName == "Exports") %>% 

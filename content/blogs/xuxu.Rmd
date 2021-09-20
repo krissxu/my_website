@@ -15,7 +15,7 @@ title: Pre-course session
 
 ---
 
-```{r load-libraries, warning=FALSE, message=FALSE, echo=FALSE}
+```{r load-libraries, warning=FALSE, message=FALSE}
 library(tidyverse)  # Load ggplot2, dplyr, and all the other tidyverse packages
 library(gapminder)  # gapminder dataset
 library(here)
@@ -171,7 +171,7 @@ extend_brexit_immigration_plot<-brexit_immigration_plot+labs(title="Correlation 
 extend_brexit_immigration_plot
 ```
 
-What can you say about the relationship shown above? Again, don't just say what's happening in the graph. Tell some sort of story and speculate about the differences in the patterns.
+>What can you say about the relationship shown above? Again, don't just say what's happening in the graph. Tell some sort of story and speculate about the differences in the patterns.
 
 > It is clear that most UK residents voted for leaving the EU. However, there are some difference in different parliament constituencies. According to the last plot, this is because of the various levels of precentatge of native born residents in regions. Therefore, I guess votes in the key cities such as London and Manchester, where contain more residents who had international background before or were born abroad, tend to against leaving the EU.
 
@@ -234,7 +234,9 @@ animal_rescue %>%
 
 ```
 
-Do you see anything strange in these tables? \> Cat is at the top of list, which is understandable. But the bird and fox occuiped 25% of anamials rescue, which is quite strange. Can't imagine how the London fire brigade can help birds, which are hard to catch in order to rescue them, and foxes are very rare in most areas of human activity. Also, there are two types of Cat (Cat,cat) in the table.
+>Do you see anything strange in these tables? 
+
+> Cat is at the top of list, which is understandable. But the bird and fox occuiped 25% of anamials rescue, which is quite strange. Can't imagine how the London fire brigade can help birds, which are hard to catch in order to rescue them, and foxes are very rare in most areas of human activity. Also, there are two types of Cat (Cat,cat) in the table.
 
 Finally, let us have a loot at the notional cost for rescuing each of these animals. As the LFB says,
 
@@ -285,7 +287,6 @@ animal_rescue %>%
             count = n()) %>% 
   
   # sort the resulting data in descending order. You choose whether to sort by count or mean cost.
-  #arrange(????)
 arrange(desc(mean_incident_cost))%>%
           select(mean_incident_cost, median_incident_cost,animal_group_parent)
 
@@ -320,18 +321,7 @@ base_plot + stat_ecdf(geom = "step", pad = FALSE) +
 
 ```
 
-Which of these four graphs do you think best communicates the variability of the `incident_notional_cost` values? Also, can you please tell some sort of story (which animals are more expensive to rescue than others, the spread of values) and speculate about the differences in the patterns.
+>Which of these four graphs do you think best communicates the variability of the `incident_notional_cost` values? Also, can you please tell some sort of story (which animals are more expensive to rescue than others, the spread of values) and speculate about the differences in the patterns.
 
 > Cow, Snake, Horse and Ferret are the four graphs, in my opinion, best communicates the variability of the incident cost values. Horse and Cow are much more expensive to rescue than others, probably because they have huge size and complex body structure.
 
-# Submit the assignment
-
-Knit the completed R Markdown file as an HTML document (use the "Knit" button at the top of the script editor window) and upload it to Canvas.
-
-## Details
-
-If you want to, please answer the following
-
--   Who did you collaborate with: TYPE NAMES HERE
--   Approximately how much time did you spend on this problem set: TYPE NAMES HERE
--   What, if anything, gave you the most trouble: install package named tidyverse on my mac.
