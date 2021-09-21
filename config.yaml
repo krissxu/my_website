@@ -39,7 +39,7 @@ params:
       - alt: HTML5 UP
         text: 'Design: '
         url: https://www.html5up.net
-      - alt: Svetlana Tulenina from Ouch!
+      - alt: Svetlana Tulenina from Ouch
         text: 'Illustration:'
         url: https://icons8.com/illustrations
     social:
@@ -88,24 +88,25 @@ params:
         url: blogs/self
       - image: r.jpg
        # subtitle: Feugiat Amet Tempus
-        title: Resume
+        title: My resume
         url: blogs/xuxucv.pdf
       - image: t.jpg
        # subtitle: Lorem Etiam Nullam
-        title: Pre-course session
+        title: Pre-course project 
         url: blogs/xuxu
       - image: plant.jpg
        # subtitle: Nisl Sed Aliquam
-        title: project 1
+        title: R project 1
         url: blogs/hwthree
       - image: w.jpg
       #  subtitle: Ipsum Dolor Sit Amet
-        title: project 2 
+        title: R project 2 
         url: blogs/hwone
       - image: y.jpg
       #  subtitle: Feugiat Amet Tempus
-        title: project 3
-        url: blogs/ipsum
+        title: About my master programme 
+        url: https://www.london.edu/masters-degrees/masters-in-analytics-and-management
+        
   #two:
     #buttonText: Get Started
     #enable: yes

@@ -77,8 +77,13 @@ Finally, using the original `gapminder` data, produce a life expectancy over tim
 
 ```{r lifeExp_facet_by_continent}
 
-plot3<-ggplot(data=gapminder,aes(x=year,y=lifeExp,colour=continent))+geom_point() + geom_smooth(se = FALSE)+facet_wrap(~continent)+theme(legend.position="none")
+plot3<-ggplot(data=gapminder,aes(x=year,y=lifeExp,colour=continent))+
+  geom_point() + 
+geom_smooth(se = FALSE)+
+facet_wrap(~continent)+
+theme(legend.position="none")
 plot3
+
 ```
 
 Given these trends, what can you say about life expectancy since 1952? Again, don't just say what's happening in the graph. Tell some sort of story and speculate about the differences in the patterns.
